@@ -1,0 +1,34 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.9.0
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=admin
+      - bootstrap.memory_lock=true
+      - "plugins.security.disabled=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: >
+        sh -c "curl -s http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s | grep -q '\"status\":\"yellow\"'"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  
+  opensearch-client:
+    build: ./app/opensearch_client
+    container_name: opensearch-client
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    networks:
+      - opensearch-net
+  
+networks:
+    opensearch-net: {}
