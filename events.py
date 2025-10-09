@@ -38,7 +38,7 @@ class Receive:
     def __init__(self):
         logging.info("Waiting for messages...")
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='message_broker')
+            pika.ConnectionParameters(host=os.getenv("RABBITMQ_HOST"))
         )
 
         self.channel = self.connection.channel()

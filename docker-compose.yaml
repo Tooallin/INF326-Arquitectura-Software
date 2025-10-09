@@ -5,6 +5,7 @@ services:
       - "8000:8000"
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
+      RABBITMQ_HOST: "message_broker"
     depends_on:
       - elasticsearch
 
@@ -18,6 +19,11 @@ services:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+
+networks:
+  default:
+    name: Search_Service
+    external: true
 
 volumes:
   es_data:
