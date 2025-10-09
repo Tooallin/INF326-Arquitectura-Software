@@ -6,7 +6,7 @@ mapping = {
         "properties": {
             "id": {"type": "integer"},
             "content": {"type": "text"},
-            "autor_id": {"type": "integer"},
+            "author_id": {"type": "integer"},
             "thread_id": {"type": "integer"},
         }
     }
