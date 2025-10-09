@@ -2,7 +2,13 @@ from mensajes.mapping import index_name
 from elastic_search.connection import get_client
 import json
 
-def get_all(thread_id: int):
+def search_message(
+	q: str,
+	author_id: int | None,
+	thread_id: int | None,
+	limit: int,
+	offset: int
+):
     es = get_client()
 
     # 🔍 Construcción del query base
