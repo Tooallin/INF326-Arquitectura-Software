@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch, exceptions
 
-from .connection import get_client
+from elastic_search.connection import get_client
 from mensajes.mapping import index_name as index_messages, mapping as messages_mapping
 
 def create_index(index_name: str, mapping: dict):

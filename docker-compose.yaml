@@ -1,13 +1,14 @@
 services:
   search_service:
-    build: .  # Construye desde el Dockerfile en el directorio actual
+    build: .
     ports:
       - "8000:8000"
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
-      RABBITMQ_HOST: "message_broker"  # Tu RabbitMQ externo
+      RABBITMQ_HOST: "message_broker"  # Se conecta a un broker externo
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - Search_Service
 
@@ -21,6 +22,11 @@ services:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep '\"status\":\"green\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - Search_Service
 

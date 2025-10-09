@@ -1,6 +1,7 @@
 import json
 import pika
 import logging
+import os 
 
 from mensajes.consumer import create as message_create
 
@@ -48,7 +49,7 @@ class Receive:
                                       exchange_type='topic')
 
         # Declaración de colas asociadas
-        self.channel.queue_declare('messages_create', exclusive=True)
+        self.channel.queue_declare('messages', exclusive=True)
 
         # Definir de que exchange consumirá la cola los eventos (mensajes)
         self.channel.queue_bind(exchange='messages',
