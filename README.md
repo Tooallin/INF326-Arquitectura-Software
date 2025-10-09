@@ -11,5 +11,5 @@
 3.- En el directorio raíz del proyecto correr: 
 `docker-compose up --build`
 
-4.- Finalmente correr en directorio raíz y en `/message_broker` el siguiente comando: 
+4.- Finalmente para terminar la ejecución correr en directorio raíz y en `/message_broker` el siguiente comando: 
 `docker-compose down`
