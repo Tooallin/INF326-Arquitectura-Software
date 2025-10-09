@@ -4,7 +4,7 @@ from typing import List
 
 router = APIRouter()
 
-#Crear el mensaje base de una conversacion para un usuario autenticado
+# Obtener todos los mensajes de un determinado hilo
 @router.get("/get_all/{thread_id}")
 def GetAll(thread_id: int):
 	return get_all(thread_id=thread_id)
