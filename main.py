@@ -1,4 +1,4 @@
-from elastic_search.index_manager import create_index
+from elastic_search.index_manager import create_all_indices
 
 if __name__ == "__main__":
-    create_index("personas")
+    create_all_indices()
