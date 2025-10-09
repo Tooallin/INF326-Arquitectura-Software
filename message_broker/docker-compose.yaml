@@ -1,5 +1,5 @@
 services:
-  Search_Service_message_broker:
+  message_broker:
     image: rabbitmq:3-management-alpine
     ports:
         - 5672:5672
