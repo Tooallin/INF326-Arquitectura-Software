@@ -2,7 +2,7 @@ import json
 import pika
 import logging
 
-from mensajes.consumer import create as message_create()
+from mensajes.consumer import create as message_create
 
 logging.getLogger("pika").setLevel(logging.ERROR)
 
