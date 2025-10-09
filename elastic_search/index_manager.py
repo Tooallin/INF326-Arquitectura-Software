@@ -25,4 +25,4 @@ def create_index(index_name: str, mapping: dict):
 
 def create_all_indices():
     # Crear indice de mensaje
-    create_index(index_name=index_messages, messages_mapping=messages_mapping)
+    create_index(index_name=index_messages, mapping=messages_mapping)

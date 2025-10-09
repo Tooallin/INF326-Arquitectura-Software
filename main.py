@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from elastic_search.index_manager import create_all_indices
-from .events import Receive
-from .api import api_router  # Asegúrate de importar tu router
+from events import Receive
+from api.router import api_router  # Asegúrate de importar tu router
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO,

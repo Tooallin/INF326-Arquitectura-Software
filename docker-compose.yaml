@@ -1,13 +1,15 @@
 services:
   search_service:
-    build: . # Builds from a Dockerfile in the current directory
+    build: .  # Construye desde el Dockerfile en el directorio actual
     ports:
       - "8000:8000"
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
-      RABBITMQ_HOST: "message_broker"
+      RABBITMQ_HOST: "message_broker"  # Tu RabbitMQ externo
     depends_on:
       - elasticsearch
+    networks:
+      - Search_Service
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
@@ -19,11 +21,12 @@ services:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
-
-networks:
-  default:
-    name: Search_Service
-    external: true
+    networks:
+      - Search_Service
 
 volumes:
   es_data:
+
+networks:
+  Search_Service:
+    external: true
