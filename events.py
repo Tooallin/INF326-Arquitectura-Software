@@ -1,7 +1,7 @@
 import json
 import pika
 import logging
-import os 
+import os
 
 from mensajes.consumer import create as message_create
 from files.consumer import create_file as file_create
