@@ -14,7 +14,6 @@ def create_index(index_name: str, mapping: dict):
 
         # Crear el índice
         es.indices.create(index=index_name, body=mapping)
-        print(f"Índice '{index_name}' creado ✅")
 
     except exceptions.ConnectionError as e:
         # Error de conexión con Elasticsearch
