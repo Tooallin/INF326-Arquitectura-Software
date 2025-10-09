@@ -2,22 +2,66 @@ from mensajes.mapping import index_name
 from elastic_search.connection import get_client
 import json
 
-def get_all(thread_id: int):
+def search_message(
+	q: str | None,
+	author_id: int | None,
+	thread_id: int | None,
+	limit: int,
+	offset: int
+):
     es = get_client()
 
-    query = {
-        "query": {
-            "match": {
-                "thread_id": thread_id
+    # 🔍 Construcción del query dinámico
+    must_clauses = []
+    filters = []
+
+    if q:
+        must_clauses.append({
+            "multi_match": {
+                "query": q,
+                "fields": ["content"],
+                "fuzziness": "AUTO"
+            }
+        })
+    if author_id:
+        filters.append({"term": {"author_id": author_id}})
+    if thread_id:
+        filters.append({"term": {"thread_id": thread_id}})
+
+    # Si no hay palabra clave ni filtros, devolver todo el índice (limitado)
+    if not must_clauses and not filters:
+        query = {"match_all": {}}
+    else:
+        query = {
+            "bool": {
+                "must": must_clauses if must_clauses else [{"match_all": {}}],
+                "filter": filters
             }
         }
+
+    # 🔸 Construir cuerpo completo
+    body = {
+        "query": query,
+        "sort": [{"sent_at": {"order": "desc"}}],
+        "from": offset,
+        "size": limit
     }
 
-    resultado = es.search(index=index_name, body=query)
+    # 🔸 Ejecutar búsqueda
+    result = es.search(index=index_name, body=body)
 
-    # Extraer solo los documentos
-    docs = [hit["_source"] for hit in resultado['hits']['hits']]
+    hits = [
+        {
+            "id": hit["_source"]["id"],
+            "content": hit["_source"]["content"],
+            "sent_at": hit["_source"]["sent_at"],
+            "author_id": hit["_source"]["author_id"],
+            "thread_id": hit["_source"]["thread_id"],
+        }
+        for hit in result["hits"]["hits"]
+    ]
 
-    # Convertir a JSON
-    json_output = json.dumps(docs, indent=2)
-    return json_output
+    return {
+        "total": result["hits"]["total"]["value"],
+        "results": hits
+    }
