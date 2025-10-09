@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from mensajes.services import get_all
+from fastapi import APIRouter, Query
+from mensajes.services import search_message
 from typing import List
 
 router = APIRouter()
