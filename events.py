@@ -67,8 +67,12 @@ class Receive:
 
         if routing_key.startswith("messages.create"):
             logging.info(f"Evento de creación de mensaje recibido: {body['id']}")
-            message_create(body)
-            logging.info(f"Nuevo mensaje creado: {body['id']}")
+            try:
+                message_create(body)
+                logging.info(f"Nuevo mensaje creado: {body['id']}")
+            except Exception as e:
+                logging.error(f"⚠️ Ocurrió un error: {e}")
+                
         elif routing_key.startswith("messages.update"):
             logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
             logging.info(f"Mensaje actualizado: {body['id']}")
@@ -82,9 +86,3 @@ class Receive:
 
     def close(self):
         self.connection.close()
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
-    Receive()
