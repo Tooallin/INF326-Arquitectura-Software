@@ -4,7 +4,12 @@ from typing import List
 
 router = APIRouter()
 
-# Obtener todos los mensajes de un determinado hilo
-@router.get("/get_all/{thread_id}")
-def GetAll(thread_id: int):
-	return get_all(thread_id=thread_id)
+@router.get("/search_message")
+def SearchMessages(
+	q: str = Query(..., description="Palabra clave o frase a buscar en mensajes"),
+	author_id: int | None = Query(None, description="Filtrar por ID de autor"),
+	thread_id: int | None = Query(None, description="Filtrar por ID de hilo"),
+	limit: int = Query(10, ge=1, le=100, description="Cantidad máxima de resultados (por defecto 10)"),
+	offset: int = Query(0, ge=0, description="Desplazamiento de resultados (paginación)")
+):
+	return search_message(q=q, author_id=author_id, thread_id=thread_id, limit=limit, offset=offset)

@@ -5,19 +5,43 @@ import json
 def get_all(thread_id: int):
     es = get_client()
 
+    # 🔍 Construcción del query base
+    filters = []
+    if author_id:
+        filters.append({"term": {"author_id": author_id}})
+    if thread_id:
+        filters.append({"term": {"thread_id": thread_id}})
+
     query = {
         "query": {
-            "match": {
-                "thread_id": thread_id
+            "bool": {
+                "must": [
+                    {"match": {"content": q}}  # búsqueda textual
+                ],
+                "filter": filters
             }
-        }
+        },
+        "sort": [{"sent_at": {"order": "desc"}}],
+        "from": offset,
+        "size": limit
     }
 
-    resultado = es.search(index=index_name, body=query)
+    # 🔸 Ejecutar la búsqueda
+    result = es.search(index=index_name, body=query)
 
-    # Extraer solo los documentos
-    docs = [hit["_source"] for hit in resultado['hits']['hits']]
+    # 🔹 Formatear resultados
+    hits = [
+        {
+            "id": hit["_source"]["id"],
+            "content": hit["_source"]["content"],
+            "sent_at": hit["_source"]["sent_at"],
+            "author_id": hit["_source"]["author_id"],
+            "thread_id": hit["_source"]["thread_id"],
+        }
+        for hit in result["hits"]["hits"]
+    ]
 
-    # Convertir a JSON
-    json_output = json.dumps(docs, indent=2)
-    return json_output
+    return {
+        "total": result["hits"]["total"]["value"],
+        "results": hits
+    }
