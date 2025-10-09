@@ -1,4 +1,4 @@
-from mensajes.indexation import index_name
+from mensajes.mapping import index_name
 
 def create(body: dict):
     try:
