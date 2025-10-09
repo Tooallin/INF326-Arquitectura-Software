@@ -2,6 +2,8 @@ import json
 import pika
 import logging
 
+from mensajes.consumer import create
+
 logging.getLogger("pika").setLevel(logging.ERROR)
 
 '''
@@ -64,10 +66,13 @@ class Receive:
         routing_key = method.routing_key 
 
         if routing_key.startswith("messages.create"):
+            logging.info(f"Evento de creación de mensaje recibido: {body['name']}")
             logging.info(f"Nuevo mensaje creado: {body['name']}")
         elif routing_key.startswith("messages.update"):
+            logging.info(f"Evento de actualización de mensaje recibido: {body['name']}")
             logging.info(f"Mensaje actualizado: {body['name']}")
         elif routing_key.startswith("messages.delete"):
+            logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
             logging.info(f"Mensaje eliminado: {body['name']} 👋")
         else:
             logging.warning(f"Evento no reconocido: {routing_key}")
