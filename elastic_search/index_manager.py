@@ -1,3 +1,4 @@
+import logging
 from elasticsearch import Elasticsearch, exceptions
 
 from elastic_search.connection import get_client
@@ -12,7 +13,7 @@ def create_index(index_name: str, mapping: dict):
         # Verificar si el índice ya existe
         if es.indices.exists(index=index_name):
             # Lanza una excepción si ya existe
-            raise ValueError(f"El índice '{index_name}' ya existe.")
+            logging.warning(f"El índice '{index_name}' ya existe.")
 
         # Crear el índice
         es.indices.create(index=index_name, body=mapping)

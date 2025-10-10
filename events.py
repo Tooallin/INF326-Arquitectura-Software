@@ -56,17 +56,17 @@ class Receive:
 		
 
 		# Declaración de cola para archivos
-		self.channel.queue_declare("q.files", exclusive=True)
-		self.channel.queue_bind(exchange="files", queue="q.files", routing_key="files.*.*")
+		self.channel.queue_declare("files", exclusive=True)
+		self.channel.queue_bind(exchange="files", queue="files", routing_key="files.*.*")
 
 		# Declaración de cola para hilos
-		self.channel.queue_declare(queue='q.threads', exclusive=True)
-		self.channel.queue_bind(exchange='threads', queue='q.threads', routing_key="threads.*.*")
+		self.channel.queue_declare(queue='threads', exclusive=True)
+		self.channel.queue_bind(exchange='threads', queue='threads', routing_key="threads.*.*")
 		
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages', on_message_callback=self.callback_messages)
-		self.channel.basic_consume(queue="q.files", on_message_callback=self.callback_files)
-		self.channel.basic_consume(queue="q.threads", on_message_callback=self.callback_threads)
+		self.channel.basic_consume(queue="files", on_message_callback=self.callback_files)
+		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
 
 		self.channel.start_consuming()
 
@@ -96,14 +96,21 @@ class Receive:
 	def callback_files(self, ch, method, properties, body):
 		try:
 			payload = json.loads(body)
-			rk = method.routing_key
+		except Exception as e:
+			logging.error(f"[files.*] body inválido (no JSON): {e}")
+			# No se puede procesar → NACK sin requeue para no quedar en loop
+			ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+			return
+		
+		rk = method.routing_key
+		try:
 			if rk.startswith("files.create"):
 				logging.info(f"[files.create] id={payload.get("id")} name={payload.get("name")}")
 				file_create(payload)
-			if rk.startswith("files.update"):
+			elif rk.startswith("files.update"):
 				logging.info(f"[files.update] id={payload.get("id")} name={payload.get("name")}")
 				# TODO file_update(payload)
-			if rk.startswith("files.delete"):
+			elif rk.startswith("files.delete"):
 				logging.info(f"[files.delete] id={payload.get("id")} name={payload.get("name")}")
 				# TODO file_delete(payload)
 			else:
@@ -111,25 +118,33 @@ class Receive:
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
 			logging.error(f"Error en callback_files: {e}")
-		ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+			ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
 	def callback_threads(self, ch, method, properties, body):
 		try:
-			body = json.loads(body)
-			rk = method.routing_key
-			if rk.sartswith("threads.create"):
-				logging.info(f"[threads.create] id={body.get("id")} title={body.get("title")}")
-				create_thread(body)
-			if rk.startswith("threads.update"):
-				logging.info(f"[threads.update] id={body.get("id")} title={body.get("title")}")
-				update_thread(body)
-			if rk.startswith("threads.delete"):
-				logging.info(f"[threads.delete] id={body.get("id")} title={body.get("title")}")
-				delete_thread(body)
+			payload = json.loads(body)
+		except Exception as e:
+			logging.error(f"[files.*] body inválido (no JSON): {e}")
+			# No se puede procesar → NACK sin requeue para no quedar en loop
+			ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+			return
+		
+		rk = method.routing_key
+		try:
+			if rk.startswith("threads.create"):
+				logging.info(f"[threads.create] id={payload.get("id")} title={payload.get("title")}")
+				create_thread(payload)
+			elif rk.startswith("threads.update"):
+				logging.info(f"[threads.update] id={payload.get("id")} title={payload.get("title")}")
+				update_thread(payload)
+			elif rk.startswith("threads.delete"):
+				logging.info(f"[threads.delete] id={payload.get("id")} title={payload.get("title")}")
+				delete_thread(payload)
 			else:
 				logging.warning(f"[threads.*] routing no reconocido: {rk}")
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
-			logging.error(f"Error parseando los archivos")
+			logging.error(f"Error en callback_files: {e}")
+			ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 	def close(self):
 		self.connection.close()

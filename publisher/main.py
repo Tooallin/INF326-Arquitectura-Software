@@ -13,6 +13,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logging.getLogger("pika").setLevel(logging.ERROR)
 log = logging.getLogger(__name__)
 
+def default_serializer(obj):
+	if isinstance(obj, datetime):
+		return obj.isoformat() + "Z"
+	raise TypeError(f"Type {type(obj)} not serializable")
 
 # =========================
 # Models (Create-only)
@@ -40,16 +44,16 @@ class ThreadCreate(BaseModel):
 	title: str
 	content: str
 	author_id: int
-	creation_date: datetime = Field(default_factory=datetime.utcnow)
-	tags: list[str] = Field(default_factory=list)
-	category: Optional[str] = None
+	creation_date: datetime
+	tags: list[str]
+	category: str
 
 
 # =========================
 # Publisher
 # =========================
 class Publisher:
-	def __init__(self, exchange_durable: bool = True, auto_provision_threads_queue: bool = False):
+	def __init__(self, exchange_durable: bool = False, auto_provision_threads_queue: bool = False):
 		self.exchange_durable = exchange_durable
 		self.auto_provision_threads_queue = auto_provision_threads_queue
 		self.connection = None
@@ -73,14 +77,15 @@ class Publisher:
 		self.connection = pika.BlockingConnection(params)
 		self.channel = self.connection.channel()
 
-		# Exchanges
+		# Exchanges (todos topic)
 		self.channel.exchange_declare(exchange="messages", exchange_type="topic", durable=self.exchange_durable)
 		self.channel.exchange_declare(exchange="files", exchange_type="topic", durable=self.exchange_durable)
-		self.channel.exchange_declare(exchange="threads", exchange_type="fanout", durable=self.exchange_durable)
+		self.channel.exchange_declare(exchange="threads", exchange_type="topic", durable=self.exchange_durable)
 
+		# (opcional) provisionar cola/binding para threads con topic
 		if self.auto_provision_threads_queue:
 			self.channel.queue_declare(queue="search_threads_indexation", durable=False, exclusive=False, auto_delete=False)
-			self.channel.queue_bind(exchange="threads", queue="search_threads_indexation")
+			self.channel.queue_bind(exchange="threads", queue="search_threads_indexation", routing_key="threads.*")
 
 		self.channel.confirm_delivery()
 
@@ -99,27 +104,18 @@ class Publisher:
 		self._publish_topic("files", "create", str(item.id), item.model_dump())
 
 	def publish_thread_create(self, item: ThreadCreate):
-		self._publish_fanout("threads", item.model_dump())
+		# Ahora threads también usa topic (no fanout)
+		self._publish_topic("threads", "create", str(item.id), item.model_dump())
 
 	def _publish_topic(self, domain: str, action: str, entity_id: str, payload: dict):
 		self.connect()
 		routing_key = f"{domain}.{action}.{entity_id}"
-		body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-		props = pika.BasicProperties(delivery_mode=2)
+		body = json.dumps(payload, ensure_ascii=False, default=default_serializer).encode("utf-8")
+		props = pika.BasicProperties(delivery_mode=2)  # persistente si las colas son durables
 		log.info(f"→ publish ex={domain} rk={routing_key}")
 		ok = self.channel.basic_publish(exchange=domain, routing_key=routing_key, body=body, properties=props, mandatory=False)
 		if not ok:
 			raise RuntimeError(f"No se pudo confirmar publicación: {domain}:{routing_key}")
-
-	def _publish_fanout(self, exchange: str, payload: dict):
-		self.connect()
-		body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-		props = pika.BasicProperties(delivery_mode=2)
-		log.info(f"→ broadcast ex={exchange} (fanout)")
-		ok = self.channel.basic_publish(exchange=exchange, routing_key="", body=body, properties=props, mandatory=False)
-		if not ok:
-            # This indent block must be tabs; ensure proper indentation
-			raise RuntimeError("No se pudo confirmar publicación en fanout '{exchange}'.")
 
 
 # =========================
@@ -127,7 +123,8 @@ class Publisher:
 # =========================
 app = FastAPI(title="Events Publisher", version="1.0.0")
 
-publisher = Publisher()
+# Nota: por compatibilidad con exchanges existentes no durables
+publisher = Publisher(exchange_durable=False)
 
 @app.get("/health")
 def health():
@@ -159,7 +156,7 @@ def create_file_event(item: FileCreate):
 def create_thread_event(item: ThreadCreate):
 	try:
 		publisher.publish_thread_create(item)
-		return {"status": "queued", "exchange": "threads", "routing_key": ""}
+		return {"status": "queued", "exchange": "threads", "routing_key": f"threads.create.{item.id}"}
 	except Exception as e:
 		log.exception("Error publicando thread")
 		raise HTTPException(status_code=500, detail=str(e))
