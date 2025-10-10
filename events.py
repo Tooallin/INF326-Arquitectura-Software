@@ -106,7 +106,11 @@ class Receive:
 		try:
 			if rk.startswith("files.create"):
 				logging.info(f"[files.create] id={payload.get("id")} name={payload.get("name")}")
-				file_create(payload)
+				try:
+					file_create(payload)
+					logging.info(f"Nuevo archivo creado: {payload.get("id")}")
+				except Exception as e:
+					logging.error(f"Error al crear un archivo: {e}")
 			elif rk.startswith("files.update"):
 				logging.info(f"[files.update] id={payload.get("id")} name={payload.get("name")}")
 				# TODO file_update(payload)
