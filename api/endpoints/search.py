@@ -68,8 +68,8 @@ def search(
     filters = []
     if thread_id:
         filters.append({"term": {"thread_id": thread_id}})
-    if user_id:
-        filters.append({"term": {"user_id": user_id}})
+    if author_id:
+        filters.append({"term": {"author_id": author_id}})
     if thread_ids:
         filters.append({"terms": {"thread_id": thread_ids}})
     '''
@@ -81,7 +81,7 @@ def search(
         must_clauses.append({
             "multi_match": {
                 "query": q,
-                "fields": ["content", "title", "name", "description"],
+                "fields": ["content", "title", "name", "category", "tags"],
                 "fuzziness": "AUTO"
             }
         })
