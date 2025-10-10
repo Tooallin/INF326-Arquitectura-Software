@@ -13,6 +13,7 @@ mapping = {
                     } ,
             "content": { "type": "text" }, 
             "author_id": { "type": "keyword" },
+            "channel_id": { "type": "keyword" },
             "creation_date": { "type": "date" } ,
             "tags": { "type": "keyword" },
             "category": { "type": "keyword" }

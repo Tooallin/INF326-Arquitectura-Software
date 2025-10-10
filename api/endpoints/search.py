@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Query
 from typing import List
 from elasticsearch import Elasticsearch
+from elastic_search.connection import get_client
 
 router = APIRouter()
 
-@router.get("/search")
+@router.get("/")
 def search(
     q: str | None = Query(None, description="Texto a buscar (opcional)"),
     channel_id: int | None = Query(None),
@@ -91,6 +92,6 @@ def search(
     ]
 
     return {
-        "results": hits,
-        "total": result["hits"]["total"]["value"]
+        "total": result["hits"]["total"]["value"],
+        "results": hits
     }
