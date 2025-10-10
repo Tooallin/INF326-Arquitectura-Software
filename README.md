@@ -6,10 +6,13 @@
 `docker network create Search_Service`
 
 2.- En el directorio `/message_broker` correr: 
-`docker-compose up --build -d`
+`docker compose up --build -d`
 
-3.- En el directorio raíz del proyecto correr: 
-`docker-compose up --build -d`
+3.- En el directorio `/publisher` correr: 
+`docker compose up --build -d`
 
-4.- Finalmente para terminar la ejecución correr en directorio raíz y en `/message_broker` el siguiente comando: 
-`docker-compose down`
+4.- En el directorio raíz del proyecto correr: 
+`docker compose up --build -d`
+
+5.- Finalmente para terminar la ejecución correr en los directorio correspondientes el siguiente comando: 
+`docker compose down`

@@ -1,7 +1,7 @@
 index_name = "threads"
 
 #Definir la estructura
-mappings = {
+mapping = {
     "properties":{
         "id": { "type": "keyword" },
         "title":{ 

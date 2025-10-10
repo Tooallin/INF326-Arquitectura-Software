@@ -1,0 +1,16 @@
+services:
+  events_publisher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: events_publisher
+    environment:
+      - RABBITMQ_HOST=message_broker
+    restart: unless-stopped
+    ports:
+      - "8081:8000"
+
+networks:
+  default:
+    name: Search_Service
+    external: true

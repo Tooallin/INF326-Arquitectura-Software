@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.endpoints import files, message
+from api.endpoints import files, message, threads
 
 api_router = APIRouter()
 
