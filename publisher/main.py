@@ -44,6 +44,7 @@ class ThreadCreate(BaseModel):
 	title: str
 	content: str
 	author_id: int
+	channel_id: int
 	creation_date: datetime
 	tags: list[str]
 	category: str
