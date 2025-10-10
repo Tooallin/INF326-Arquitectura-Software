@@ -5,6 +5,7 @@ import os
 
 from mensajes.consumer import create as message_create
 from files.consumer import create_file as file_create
+from threads.consumer import *
 
 logging.getLogger("pika").setLevel(logging.ERROR)
 
@@ -44,21 +45,28 @@ class Receive:
 		)
 		self.channel = self.connection.channel()
 
-		# Declaración de exchanges de tipo topic
+		# Declaración de exchanges de tipo topic*
 		self.channel.exchange_declare(exchange='messages', exchange_type='topic')
 		self.channel.exchange_declare(exchange="files", exchange_type="topic")
+		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
 		# Declaración de cola para mensajes
 		self.channel.queue_declare('messages', exclusive=True)
 		self.channel.queue_bind(exchange='messages', queue="messages", routing_key="messages.*.*")
+		
 
 		# Declaración de cola para archivos
 		self.channel.queue_declare("q.files", exclusive=True)
 		self.channel.queue_bind(exchange="files", queue="q.files", routing_key="files.*.*")
 
+		# Declaración de cola para hilos
+		self.channel.queue_declare(queue='q.threads', exclusive=True)
+		self.channel.queue_bind(exchange='threads', queue='q.threads', routing_key="threads.*.*")
+		
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages', on_message_callback=self.callback_messages)
 		self.channel.basic_consume(queue="q.files", on_message_callback=self.callback_files)
+		self.channel.basic_consume(queue="q.threads", on_message_callback=self.callback_threads)
 
 		self.channel.start_consuming()
 
@@ -103,7 +111,25 @@ class Receive:
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
 			logging.error(f"Error en callback_files: {e}")
-			ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+		ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
+	def callback_threads(self, ch, method, properties, body):
+		try:
+			body = json.loads(body)
+			rk = method.routing_key
+			if rk.sartswith("threads.create"):
+				logging.info(f"[threads.create] id={body.get("id")} title={body.get("title")}")
+				create_thread(body)
+			if rk.startswith("threads.update"):
+				logging.info(f"[threads.update] id={body.get("id")} title={body.get("title")}")
+				update_thread(body)
+			if rk.startswith("threads.delete"):
+				logging.info(f"[threads.delete] id={body.get("id")} title={body.get("title")}")
+				delete_thread(body)
+			else:
+				logging.warning(f"[threads.*] routing no reconocido: {rk}")
+			ch.basic_ack(delivery_tag=method.delivery_tag)
+		except Exception as e:
+			logging.error(f"Error parseando los archivos")
 	def close(self):
 		self.connection.close()

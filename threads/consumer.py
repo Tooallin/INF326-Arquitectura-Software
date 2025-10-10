@@ -1,31 +1,31 @@
-import pika, sys, os
+from threads.mapping import *
+from elastic_search.connection import get_client
 import json
+import logging
 
-def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channel = connection.channel()
-    
-    channel.exchange_declare(exchange='threads', exchange_type='fanout')
-
-    channel.queue_declare(queue='search_threads_indexation')
-
-    channel.queue_bind(exchange='threads', queue='search_threads_indexation')
-
-    def callback(ch, method, properties, body):
-        hilo = json.loads(body)
-        print(f"    [°] Recibido: {hilo}")
-    
-    channel.basic_consume(queue='search_threads_indexation', on_message_callback=callback, auto_ack=True)
-    
-    print('[°] Esperando mensajes. Para salir presiona CTRL+C')
-    channel.start_consuming()
-
-if __name__ == '__main__':
+def create_thread(body):
+    client = get_client()
     try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+        client.index(
+            index=index_name,
+            id=body["id"],
+            document=body
+        )
+    except Exception as e:
+        logging.error(f"Error indexando hilo: {e}")
+
+
+def update_thread(body):
+    client = get_client()
+    try:
+        client.update(
+            index=index_name,
+            id=body["id"],
+            doc=body
+        )
+    except Exception as e:
+        logging.error(f"Error actualizando el hilo: {e}")
+
+def delete_thread(body):
+    client = get_client
+    client.delete(index=index_name, id=body["id"])
