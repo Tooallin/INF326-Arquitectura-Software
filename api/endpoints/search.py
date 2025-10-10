@@ -24,6 +24,7 @@ def search(
         "file": "files"
     }
 
+    print(index)
     # === Determinar índices a buscar ===
     if "all" in index:
         indices = list(index_map.values())
