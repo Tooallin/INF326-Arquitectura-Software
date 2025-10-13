@@ -1,2 +1,4 @@
 .env
 venv
+get-pip.py
+api/endpoints/__pycache__
