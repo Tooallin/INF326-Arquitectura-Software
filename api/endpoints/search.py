@@ -26,9 +26,7 @@ def search(
     limit: int = Query(10),
     offset: int = Query(0)
 ):
-    es = get_client()  # tu función para obtener el cliente de Elasticsearch
-
-    # print(index)
+    es = get_client() 
 
     # Array de índices válidos
     valid_indices = ["messages", "threads", "files"]
