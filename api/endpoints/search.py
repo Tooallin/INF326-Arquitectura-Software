@@ -67,7 +67,32 @@ def search(
     # === 🧩 Fase 2: construcción de filtros ===
     filters = []
     if thread_id:
-        filters.append({"term": {"thread_id": thread_id}})
+        if "threads" in indices:
+            # Filtro especial: buscar por _id en threads
+            filters.append({
+                "bool": {
+                    "should": [
+                        {
+                            "bool": {
+                                "must": [
+                                    {"ids": {"values": [str(thread_id)]}},   # _id igual a thread_id
+                                    {"term": {"_index": "threads"}}         # solo en el índice threads
+                                ]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "must_not": {
+                                    "term": {"_index": "threads"}          # otros índices pasan
+                                }
+                            }
+                        }
+                    ]
+                }
+            })
+        else:
+            # Búsqueda normal por thread_id
+            filters.append({"term": {"thread_id": thread_id}})
     if author_id:
         filters.append({"term": {"author_id": author_id}})
     if thread_ids:
