@@ -49,13 +49,38 @@ def search(
     # === 🧩 Fase 1: buscar hilos si se filtra por canal ===
     thread_ids = []
     if channel_id:
-        threads_query = {
-            "query": {"term": {"channel_id": channel_id}},
-            "_source": False,
-            "size": 1000
-        }
-        threads_result = es.search(index="threads", body=threads_query)
-        thread_ids = [int(hit["_id"]) for hit in threads_result["hits"]["hits"]]
+        if "channels" in indices:
+            # Filtro especial: buscar por _id en threads
+            filters.append({
+                "bool": {
+                    "should": [
+                        {
+                            "bool": {
+                                "must": [
+                                    {"ids": {"values": [str(channel_id)]}},   # _id igual a thread_id
+                                    {"term": {"_index": "channels"}}         # solo en el índice channels
+                                ]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "must_not": {
+                                    "term": {"_index": "channels"}          # otros índices pasan
+                                }
+                            }
+                        }
+                    ]
+                }
+            })
+        else:
+            threads_query = {
+                "query": {"term": {"channel_id": channel_id}},
+                "_source": False,
+                "size": 1000
+            }
+            threads_result = es.search(index="threads", body=threads_query)
+            thread_ids = [int(hit["_id"]) for hit in threads_result["hits"]["hits"]]
+        
 
         if not thread_ids:
             return {"results": [], "total": 0}
