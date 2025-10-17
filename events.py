@@ -3,8 +3,8 @@ import pika
 import logging
 import os
 
-from mensajes.consumer import create as message_create
-from canales.consumer import create as channel_create
+from mensajes.consumer import create as message_create, update as message_update, delete as message_delete
+from canales.consumer import create as channel_create, update as channel_update, delete as channel_delete
 from files.consumer import create_file as file_create
 from threads.consumer import *
 
@@ -48,6 +48,7 @@ class Receive:
 
 		# Declaración de exchanges de tipo topic*
 		self.channel.exchange_declare(exchange='messages', exchange_type='topic')
+		self.channel.exchange_declare(exchange='channels', exchange_type='topic')
 		self.channel.exchange_declare(exchange="files", exchange_type="topic")
 		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
@@ -55,6 +56,9 @@ class Receive:
 		self.channel.queue_declare('messages', exclusive=True)
 		self.channel.queue_bind(exchange='messages', queue="messages", routing_key="messages.*.*")
 		
+		# Declaración de cola para canales
+		self.channel.queue_declare('channels', exclusive=True)
+		self.channel.queue_bind(exchange='channels', queue="channels", routing_key="channels.*.*")
 
 		# Declaración de cola para archivos
 		self.channel.queue_declare("files", exclusive=True)
@@ -66,6 +70,7 @@ class Receive:
 		
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages', on_message_callback=self.callback_messages)
+		self.channel.basic_consume(queue='channels', on_message_callback=self.callback_channels)
 		self.channel.basic_consume(queue="files", on_message_callback=self.callback_files)
 		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
 
@@ -82,13 +87,20 @@ class Receive:
 				logging.info(f"Nuevo mensaje creado: {body['id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
-				
 		elif routing_key.startswith("messages.update"):
 			logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
-			logging.info(f"Mensaje actualizado: {body['id']}")
+			try:
+				message_update(body)
+				logging.info(f"Mensaje actualizado: {body['id']}")
+			except Exception as e:
+				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("messages.delete"):
 			logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
-			logging.info(f"Mensaje eliminado: {body['name']} 👋")
+			try:
+				message_delete(body)
+				logging.info(f"Mensaje eliminado: {body['name']} 👋")
+			except Exception as e:
+				logging.error(f"⚠️ Ocurrió un error: {e}")
 		else:
 			logging.warning(f"Evento no reconocido: {routing_key}")
 
@@ -99,19 +111,26 @@ class Receive:
 		routing_key = method.routing_key 
 
 		if routing_key.startswith("channels.create"):
-			logging.info(f"Evento de creación de mensaje recibido: {body['id']}")
+			logging.info(f"Evento de creación de canal recibido: {body['id']}")
 			try:
 				channel_create(body)
-				logging.info(f"Nuevo mensaje creado: {body['id']}")
+				logging.info(f"Nuevo canal creado: {body['id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
-				
 		elif routing_key.startswith("channels.update"):
-			logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
-			logging.info(f"Mensaje actualizado: {body['id']}")
+			logging.info(f"Evento de actualización de canal recibido: {body['id']}")
+			try:
+				channel_update(body)
+				logging.info(f"Canal actualizado: {body['id']}")
+			except Exception as e:
+				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("channels.delete"):
-			logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
-			logging.info(f"Mensaje eliminado: {body['name']} 👋")
+			logging.info(f"Evento de eliminación de canal recibido: {body['name']}")
+			try:
+				channel_delete(body)
+				logging.info(f"Canal eliminado: {body['name']} 👋")
+			except Exception as e:
+				logging.error(f"⚠️ Ocurrió un error: {e}")
 		else:
 			logging.warning(f"Evento no reconocido: {routing_key}")
 
