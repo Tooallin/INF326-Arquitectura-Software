@@ -4,6 +4,7 @@ import logging
 import os
 
 from mensajes.consumer import create as message_create
+from canales.consumer import create as channel_create
 from files.consumer import create_file as file_create
 from threads.consumer import *
 
@@ -86,6 +87,29 @@ class Receive:
 			logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
 			logging.info(f"Mensaje actualizado: {body['id']}")
 		elif routing_key.startswith("messages.delete"):
+			logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
+			logging.info(f"Mensaje eliminado: {body['name']} 👋")
+		else:
+			logging.warning(f"Evento no reconocido: {routing_key}")
+
+		ch.basic_ack(delivery_tag=method.delivery_tag)
+		
+	def callback_channels(self, ch, method, properties, body):
+		body = json.loads(body)
+		routing_key = method.routing_key 
+
+		if routing_key.startswith("channels.create"):
+			logging.info(f"Evento de creación de mensaje recibido: {body['id']}")
+			try:
+				channel_create(body)
+				logging.info(f"Nuevo mensaje creado: {body['id']}")
+			except Exception as e:
+				logging.error(f"⚠️ Ocurrió un error: {e}")
+				
+		elif routing_key.startswith("channels.update"):
+			logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
+			logging.info(f"Mensaje actualizado: {body['id']}")
+		elif routing_key.startswith("channels.delete"):
 			logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
 			logging.info(f"Mensaje eliminado: {body['name']} 👋")
 		else:

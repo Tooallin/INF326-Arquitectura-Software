@@ -2,11 +2,9 @@ from mensajes.mapping import index_name
 from elastic_search.connection import get_client
 import json
 
-def search_message(
+def search_channel(
 	q: str | None,
-	author_id: int | None,
-	thread_id: int | None,
-    message_id: int | None,  # 👈 nuevo parámetro opcional
+	channel_id: int | None,
 	limit: int,
 	offset: int
 ):
@@ -20,16 +18,12 @@ def search_message(
         must_clauses.append({
             "multi_match": {
                 "query": q,
-                "fields": ["content"],
+                "fields": ["title"],
                 "fuzziness": "AUTO"
             }
         })
-    if author_id:
-        filters.append({"term": {"author_id": author_id}})
-    if thread_id:
-        filters.append({"term": {"thread_id": thread_id}})
-    if message_id:
-        filters.append({"term": {"id": message_id}})
+    if channel_id:
+        filters.append({"term": {"id": channel_id}})
 
     # Si no hay palabra clave ni filtros, devolver todo el índice (limitado)
     if not must_clauses and not filters:
@@ -45,7 +39,7 @@ def search_message(
     # 🔸 Construir cuerpo completo
     body = {
         "query": query,
-        "sort": [{"sent_at": {"order": "desc"}}],
+        "sort": [{"created_at": {"order": "desc"}}],
         "from": offset,
         "size": limit
     }
@@ -56,10 +50,8 @@ def search_message(
     hits = [
         {
             "id": hit["_source"]["id"],
-            "content": hit["_source"]["content"],
-            "sent_at": hit["_source"]["sent_at"],
-            "author_id": hit["_source"]["author_id"],
-            "thread_id": hit["_source"]["thread_id"],
+            "title": hit["_source"]["title"],
+            "created_at": hit["_source"]["created_at"],
         }
         for hit in result["hits"]["hits"]
     ]

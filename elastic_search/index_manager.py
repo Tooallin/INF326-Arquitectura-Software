@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, exceptions
 
 from elastic_search.connection import get_client
 from mensajes.mapping import index_name as index_messages, mapping as messages_mapping
+from canales.mapping import index_name as index_channels, mapping as channels_mapping
 from files.mapping import index_name as index_files, mapping as mapping_files
 from threads.mapping import index_name as index_threads, mapping as mapping_threads
 
@@ -30,6 +31,9 @@ def create_index(index_name: str, mapping: dict):
 def create_all_indices():
     # Crear indice de mensaje
     create_index(index_name=index_messages, mapping=messages_mapping)
+
+    # Creal el índice de canales
+    create_index(index_name=index_channels, mapping=channels_mapping)
 
     # Crear el indice de archivos
     create_index(index_name=index_files, mapping=mapping_files)
