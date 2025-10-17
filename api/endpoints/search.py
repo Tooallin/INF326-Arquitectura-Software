@@ -21,7 +21,7 @@ def search(
     author_id: int | None = Query(None),
     index: List[IndexEnum] = Query(
         ["all"],
-        description="Índices a consultar (puede ser una lista: 'all', 'messages', 'threads', 'files')"
+        description="Índices a consultar (puede ser una lista: 'all', 'messages', 'threads', 'files', 'channels")"
     ),
     limit: int = Query(10),
     offset: int = Query(0)
@@ -29,7 +29,7 @@ def search(
     es = get_client() 
 
     # Array de índices válidos
-    valid_indices = ["messages", "threads", "files"]
+    valid_indices = ["messages", "threads", "files", "channels"]
     index_aux = [i.value for i in index]
     '''
     print("--------------------------------")
