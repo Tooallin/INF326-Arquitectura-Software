@@ -14,6 +14,7 @@ def create_index(index_name: str, mapping: dict):
         if es.indices.exists(index=index_name):
             # Lanza una excepción si ya existe
             logging.warning(f"El índice '{index_name}' ya existe.")
+            return
 
         # Crear el índice
         es.indices.create(index=index_name, body=mapping)
