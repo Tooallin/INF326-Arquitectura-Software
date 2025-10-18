@@ -6,7 +6,7 @@ mapping = {
 	"mappings": {
 		"properties": {
 			"id": {"type": "integer"},
-			"title": {"type": "integer"},
+			"title": {"type": "text"},
 			"created_at": {"type": "date"},
 		}
 	}
