@@ -1,4 +1,8 @@
-# INF326-Arquitectura-Software
+# INF326-Arquitectura-Software Tarea 4
+Integrantes:
+- Jan Jorquera.
+- Jose Astudillo.
+- Alessandro Cintolesi.
 
 ## Instrucciones para correr la tarea
 
