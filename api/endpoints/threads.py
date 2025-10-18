@@ -17,23 +17,23 @@ class Thread(BaseModel):
     category: Optional[str] = None
 
 
-@router.get("/id/{thread_id}", response_model=Thread)
+@router.get("/id/{thread_id}")
 def read_id(thread_id: str):
     return get_by_id(thread_id)
 
-@router.get("/category/{thread_category}", response_model=Thread)
+@router.get("/category/{thread_category}")
 def read_category(thread_category: str):
     return get_by_category(thread_category)
 
-@router.get("/author/{thread_author}", response_model=Thread)
+@router.get("/author/{thread_author}")
 def read_author(thread_author: str):
     return get_by_author(thread_author)
 
-@router.get("/daterange", response_model=Thread)
+@router.get("/daterange")
 def read_date_range(start_date: datetime, end_date: datetime):
     return get_by_date_range(start_date, end_date)
 
-@router.get("/tag/{thread_tag}", response_model=Thread)
+@router.get("/tag/{thread_tag}")
 def read_tag(thread_tag: str):
     return get_by_tag(thread_tag)
 
