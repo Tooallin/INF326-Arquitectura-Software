@@ -123,8 +123,6 @@ class Publisher:
 		props = pika.BasicProperties(delivery_mode=2)  # persistente si las colas son durables
 		log.info(f"→ publish ex={domain} rk={routing_key}")
 		ok = self.channel.basic_publish(exchange=domain, routing_key=routing_key, body=body, properties=props, mandatory=False)
-		if not ok:
-			raise RuntimeError(f"No se pudo confirmar publicación: {domain}:{routing_key}")
 
 
 # =========================
