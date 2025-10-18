@@ -15,11 +15,33 @@ def search_channel(
     filters = []
 
     if q:
+        should_clauses = [
+            # 1) Coincidencia principal (todos los términos, alta precisión)
+            {
+                "multi_match": {
+                    "query": q,
+                    "fields": ["title^3"],
+                    "type": "best_fields",
+                    "operator": "and",
+                    "fuzziness": "1"  # mínima tolerancia (mejor que AUTO)
+                }
+            },
+            # 2) Autocompletado / frase por prefijo
+            {
+                "multi_match": {
+                    "query": q,
+                    "fields": ["title^4"],
+                    "type": "phrase_prefix"
+                }
+            }
+            # 3) (Opcional) Coincidencia exacta si tienes title.keyword en el mapping
+            # ,{ "term": { "title.keyword": q } }
+        ]
+
         must_clauses.append({
-            "multi_match": {
-                "query": q,
-                "fields": ["title"],
-                "fuzziness": "AUTO"
+            "bool": {
+                "should": should_clauses,
+                "minimum_should_match": 1
             }
         })
     if channel_id:
