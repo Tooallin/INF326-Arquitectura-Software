@@ -21,7 +21,7 @@ def search(
     author_id: int | None = Query(None),
     index: List[IndexEnum] = Query(
         ["all"],
-        description="Índices a consultar (puede ser una lista: 'all', 'messages', 'threads', 'files', 'channels")"
+        description="Índices a consultar (puede ser una lista: 'all', 'messages', 'threads', 'files', 'channels')"
     ),
     limit: int = Query(10),
     offset: int = Query(0)
