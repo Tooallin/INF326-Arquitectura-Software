@@ -28,6 +28,10 @@ class MessageCreate(BaseModel):
 	author_id: int
 	thread_id: int
 
+class ChannelCreate(BaseModel):
+	id: int
+	title: str = Field(..., min_length=1, max_length=120)
+	created_at: datetime
 
 class FileCreate(BaseModel):
 	id: int
@@ -82,6 +86,7 @@ class Publisher:
 		self.channel.exchange_declare(exchange="messages", exchange_type="topic", durable=self.exchange_durable)
 		self.channel.exchange_declare(exchange="files", exchange_type="topic", durable=self.exchange_durable)
 		self.channel.exchange_declare(exchange="threads", exchange_type="topic", durable=self.exchange_durable)
+		self.channel.exchange_declare(exchange="channels", exchange_type="topic", durable=self.exchange_durable)
 
 		# (opcional) provisionar cola/binding para threads con topic
 		if self.auto_provision_threads_queue:
@@ -107,6 +112,9 @@ class Publisher:
 	def publish_thread_create(self, item: ThreadCreate):
 		# Ahora threads también usa topic (no fanout)
 		self._publish_topic("threads", "create", str(item.id), item.model_dump())
+
+	def publish_channel_create(self, item: ChannelCreate):
+		self._publish_topic("channels", "create", str(item.id), item.model_dump())
 
 	def _publish_topic(self, domain: str, action: str, entity_id: str, payload: dict):
 		self.connect()
@@ -160,4 +168,17 @@ def create_thread_event(item: ThreadCreate):
 		return {"status": "queued", "exchange": "threads", "routing_key": f"threads.create.{item.id}"}
 	except Exception as e:
 		log.exception("Error publicando thread")
+		raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/events/channels", status_code=202)
+def create_channel_event(item: ChannelCreate):
+	try:
+		publisher.publish_channel_create(item)
+		return {
+			"status": "queued",
+			"exchange": "channels",
+			"routing_key": f"channels.create.{item.id}"
+		}
+	except Exception as e:
+		log.exception("Error publicando channel")
 		raise HTTPException(status_code=500, detail=str(e))

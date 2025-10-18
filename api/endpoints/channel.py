@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from mensajes.services import search_message
+from canales.services import search_channel
 from typing import List
 
 router = APIRouter()
