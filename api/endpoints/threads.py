@@ -16,7 +16,6 @@ class Thread(BaseModel):
     tags: Optional[list[str]] = None
     category: Optional[str] = None
 
-
 @router.get("/id/{thread_id}", response_model=List[Thread])
 def read_id(thread_id: str):
     return get_by_id(thread_id)

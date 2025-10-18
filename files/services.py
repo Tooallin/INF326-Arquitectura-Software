@@ -56,21 +56,20 @@ def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pag
 
 	# Texto
 	if q:
-		# 1) Búsqueda principal (tolerante a acentos/typos)
-		must.append({
-			"multi_match": {
-				"query": q,
-				"fields": ["name^3", "content"],
-				"type": "best_fields",
-				"fuzziness": "AUTO",
-				"operator": "and"
-			}
-		})
-		# 2) Booster por prefijo (si tu analyzer lo permite)
+		# 1) Búsqueda principal (mejor campos, exige que todos los términos estén presentes pero en AL MENOS un campo)
 		should.append({
 			"multi_match": {
 				"query": q,
 				"fields": ["name^3", "content"],
+				"type": "best_fields",
+				"operator": "and",  # AND entre términos, OR entre campos
+			}
+		})
+		# 2) Booster por prefijo/frase (autocomplete y coincidencias de frase)
+		should.append({
+			"multi_match": {
+				"query": q,
+				"fields": ["name^4", "content"],
 				"type": "phrase_prefix"
 			}
 		})
@@ -86,16 +85,16 @@ def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pag
 		if pages_max is not None: rg["lte"] = pages_max
 		filter_.append({"range": {"pages": rg}})
 
-	# Query final (corrige el match_all como LISTA)
-	if not must and not filter_ and not should:
+	# Query final: si no hay texto ni filtros => match_all
+	if not q and not filter_:
 		query = {"match_all": {}}
 	else:
 		query = {
 			"bool": {
-				"must": must if must else [{"match_all": {}}],
-				"filter": filter_,
+				# Claves: usamos SOLO should para el texto (OR entre campos) y exigimos al menos 1
 				"should": should,
-				"minimum_should_match": 1 if should else 0
+				"minimum_should_match": 1 if should else 0,
+				"filter": filter_,
 			}
 		}
 
