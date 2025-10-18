@@ -1,4 +1,4 @@
-from mensajes.mapping import index_name
+from canales.mapping import index_name
 from elastic_search.connection import get_client
 import json
 
