@@ -4,42 +4,6 @@ from files.mapping import index_name
 from elastic_search.connection import get_client
 from elasticsearch import helpers
 
-def svc_getall():
-	es = get_client()
-	if not es.indices.exists(index=index_name):
-		logging.warning(f"[files] índice no existe: {index_name}")
-		return []  # devolver lista vacía es más útil que string vacío
-
-	# Si se acaba de indexar, asegura visibilidad
-	es.indices.refresh(index=index_name)
-
-	# Conteo para diagnosticar
-	total = es.count(index=index_name).get("count", 0)
-	logging.info(f"[files] total docs en '{index_name}': {total}")
-
-	if total == 0:
-		return []
-
-	res_files = []
-	try:
-		for hit in helpers.scan(
-			client=es,
-			index=index_name,
-			query={"query": {"match_all": {}}},
-			_source=True,
-			scroll="2m",
-			size=1000,
-			preserve_order=True,
-		):
-			src = hit.get("_source") or {}
-			if src:
-				res_files.append(src)
-	except Exception as e:
-		logging.error(f"[files] error en scan: {e}")
-		return []
-
-	return res_files 
-
 def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pages_max=None, limit=10, offset=0):
 	es = get_client()
 	index = index_name  # "files"

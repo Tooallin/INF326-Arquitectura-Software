@@ -1,13 +1,8 @@
 from typing import Optional
 from fastapi import APIRouter, Query
-from files.services import svc_getall, svc_searchfiles
+from files.services import svc_searchfiles
 
 router = APIRouter()
-
-# Obtener todos los archivos
-@router.get("/get_all")
-def getall():
-	return svc_getall()
 
 # Buscar un archivo segun parametros
 @router.get("/search_files")
