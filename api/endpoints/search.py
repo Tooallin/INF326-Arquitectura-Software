@@ -46,6 +46,7 @@ def search(
     print(indices)
     print("--------------------------------")
     '''
+    filters = []
     # === 🧩 Fase 1: buscar hilos si se filtra por canal ===
     thread_ids = []
     if channel_id:
@@ -88,7 +89,7 @@ def search(
     print(thread_ids)
     '''
     # === 🧩 Fase 2: construcción de filtros ===
-    filters = []
+    
     if thread_id:
         if "threads" in indices:
             # Filtro especial: buscar por _id en threads
