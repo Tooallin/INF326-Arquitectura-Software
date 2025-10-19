@@ -82,9 +82,10 @@ def search(
             threads_result = es.search(index="threads", body=threads_query)
             thread_ids = [int(hit["_id"]) for hit in threads_result["hits"]["hits"]]
         
-
-        if not thread_ids:
-            return {"results": [], "total": 0}
+            '''
+            if not thread_ids:
+                return {"results": [], "total": 0}
+            '''
     '''
     print(thread_ids)
     '''
