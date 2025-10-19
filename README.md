@@ -4,6 +4,8 @@ Integrantes:
 - Jose Astudillo.
 - Alessandro Cintolesi.
 
+
+## [Enlace video](https://usmcl-my.sharepoint.com/:v:/g/personal/jan_jorquera_usm_cl/ERjWPO-v5AdAivVsWNW5TWcBoSLpJe8-DF9RSoOXLnRZ1A?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=rAz1cH)
 ## Instrucciones para correr la tarea
 
 1.- Crear la red donde se comunicarán los containers
