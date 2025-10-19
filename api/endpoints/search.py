@@ -74,18 +74,24 @@ def search(
                 }
             })
         else:
-            threads_query = {
-                "query": {"term": {"channel_id": channel_id}},
-                "_source": False,
-                "size": 1000
-            }
-            threads_result = es.search(index="threads", body=threads_query)
-            thread_ids = [int(hit["_id"]) for hit in threads_result["hits"]["hits"]]
+            filters.append({"term": {"channel_id": channel_id}})
+        '''
+        threads_query = {
+            "query": {"term": {"channel_id": channel_id}},
+            "_source": False,
+            "size": 1000
+        }
+        threads_result = es.search(index="threads", body=threads_query)
+        thread_ids = [int(hit["_id"]) for hit in threads_result["hits"]["hits"]]
+
         
-            '''
-            if not thread_ids:
-                return {"results": [], "total": 0}
-            '''
+        
+        print("threads es")
+        print(thread_ids)
+        
+        if not thread_ids:
+            return {"results": [], "total": 0}
+        '''
     '''
     print(thread_ids)
     '''
@@ -120,8 +126,6 @@ def search(
             filters.append({"term": {"thread_id": thread_id}})
     if author_id:
         filters.append({"term": {"author_id": author_id}})
-    if thread_ids:
-        filters.append({"terms": {"thread_id": thread_ids}})
     '''
     print(filters)
     '''
@@ -146,9 +150,9 @@ def search(
         "from": offset,
         "size": limit
     }
-    '''
+
     print(query)
-    '''
+
     # === 🧩 Ejecución de la búsqueda ===
     result = es.search(index=indices, body=query)
 
