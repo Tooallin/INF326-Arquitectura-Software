@@ -33,6 +33,6 @@ spec:
         - containerPort: 8000
         env:
         - name: ELASTICSEARCH_URL
-          value: "http://search-service-elasticsearch:9200"
+          value: "http://search-service-elasticsearch.default.svc.cluster.local:9200"
         - name: RABBITMQ_HOST
           value: message-broker
