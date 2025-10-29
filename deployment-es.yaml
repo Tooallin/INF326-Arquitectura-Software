@@ -41,6 +41,13 @@ spec:
           value: "false"
         - name: discovery.type
           value: "single-node"
+        resources:
+          requests:
+            cpu: "250m"        # reserva 1/4 de CPU
+            memory: "512Mi"    # garantiza medio GB de RAM
+          limits:
+            cpu: "500m"        # puede usar hasta 1/2 CPU
+            memory: "1Gi"      # puede usar hasta 1 GB de RAM
         volumeMounts:
         - name: es-data
           mountPath: /usr/share/elasticsearch/data
