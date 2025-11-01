@@ -29,6 +29,8 @@ spec:
       labels:
         app: search-service-elasticsearch
     spec:
+      securityContext:
+        fsGroup: 1000        # 👈 Da permisos al contenedor para escribir en el volumen
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
@@ -36,18 +38,18 @@ spec:
         - containerPort: 9200
         env:
         - name: ES_JAVA_OPTS
-          value: "-Xms4g -Xmx4g"
+          value: "-Xms1g -Xmx1g"       # 🔹 Aumentamos el heap a 1 GB
         - name: xpack.security.enabled
           value: "false"
         - name: discovery.type
           value: "single-node"
         resources:
           requests:
-            cpu: "250m"        # reserva 1/4 de CPU
-            memory: "512Mi"    # garantiza medio GB de RAM
+            cpu: "250m"               # reserva 1/4 de CPU
+            memory: "1Gi"             # 🔹 solicita 1 GB como mínimo
           limits:
-            cpu: "500m"        # puede usar hasta 1/2 CPU
-            memory: "1Gi"      # puede usar hasta 1 GB de RAM
+            cpu: "500m"               # puede usar hasta 1/2 CPU
+            memory: "2Gi"             # 🔹 puede usar hasta 2 GB máximo
         volumeMounts:
         - name: es-data
           mountPath: /usr/share/elasticsearch/data

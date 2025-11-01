@@ -53,19 +53,19 @@ class Receive:
 		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
 		# Declaración de cola para mensajes
-		self.channel.queue_declare('messages', exclusive=True)
+		self.channel.queue_declare('messages', durable=True)
 		self.channel.queue_bind(exchange='messages', queue="messages", routing_key="messages.*.*")
 		
 		# Declaración de cola para canales
-		self.channel.queue_declare('channels', exclusive=True)
+		self.channel.queue_declare('channels', durable=True)
 		self.channel.queue_bind(exchange='channels', queue="channels", routing_key="channels.*.*")
 
 		# Declaración de cola para archivos
-		self.channel.queue_declare("files", exclusive=True)
+		self.channel.queue_declare("files", durable=True)
 		self.channel.queue_bind(exchange="files", queue="files", routing_key="files.*.*")
 
 		# Declaración de cola para hilos
-		self.channel.queue_declare(queue='threads', exclusive=True)
+		self.channel.queue_declare(queue='threads', durable=True)
 		self.channel.queue_bind(exchange='threads', queue='threads', routing_key="threads.*.*")
 		
 		# Consumidores y callbacks (separados)
