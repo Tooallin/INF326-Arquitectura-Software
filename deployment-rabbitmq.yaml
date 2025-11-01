@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: message-broker
+  labels:
+    app: message-broker
+spec:
+  selector:
+    app: message-broker
+  type: ClusterIP
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: management
+      port: 15672
+      targetPort: 15672
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-broker
+  labels:
+    app: message-broker
+spec:
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-broker
+  template:
+    metadata:
+      labels:
+        app: message-broker
+    spec:
+      containers:
+        - name: message-broker
+          image: rabbitmq:3-management-alpine
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          resources:
+            requests:
+              cpu: "250m"        # Reserva mínima (0.25 CPU)
+              memory: "256Mi"    # Reserva mínima de memoria
+            limits:
+              cpu: "500m"        # Límite máximo (0.5 CPU)
+              memory: "512Mi"    # Límite máximo de memoria
