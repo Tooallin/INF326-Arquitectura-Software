@@ -5,7 +5,7 @@ metadata:
 spec:
   secretName: search-service-tls
   dnsNames:
-  - search-service.inf326.cl
+  - searchservice.inf326.nursoft.dev
   issuerRef:
     name: letsencrypt-issuer
     # We can reference ClusterIssuers by changing the kind here.
