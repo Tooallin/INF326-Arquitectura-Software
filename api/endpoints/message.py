@@ -1,10 +1,29 @@
 from fastapi import APIRouter, Query
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel
 from mensajes.services import search_message
-from typing import List
+from typing import Optional, List
 
 router = APIRouter()
 
-@router.get("/search_message")
+class MessageSchema(BaseModel):
+    id: UUID
+    content: Optional[str]
+    user_id: UUID
+    thread_id: UUID
+    
+    type: Optional[str]                   # "text", "audio", "file"
+    paths: Optional[List[str]]            # lista opcional de rutas
+    
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+    deleted_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+@router.get("/search_message", response_model=List[MessageSchema])
 def SearchMessages(
 	q: str | None = Query(None, description="Palabra clave a buscar en los mensajes"),
     user_id: int | None = Query(None, description="Filtrar por ID de autor"),

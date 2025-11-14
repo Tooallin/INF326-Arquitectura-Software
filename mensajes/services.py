@@ -60,7 +60,6 @@ def search_message(
         {
             "id": hit["_source"]["id"],
             "content": hit["_source"]["content"],
-            "created_at": hit["_source"]["created_at"],
             "user_id": hit["_source"]["user_id"],
             "thread_id": hit["_source"]["thread_id"],
             "type": hit["_source"]["type"],              # opcional
@@ -73,7 +72,4 @@ def search_message(
         for hit in result["hits"]["hits"]
     ]
 
-    return {
-        "total": result["hits"]["total"]["value"],
-        "results": hits
-    }
+    return hits
