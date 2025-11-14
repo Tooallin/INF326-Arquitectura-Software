@@ -4,11 +4,15 @@ index_name = "messages"
 mapping = {
     "mappings": {
         "properties": {
-            "id": {"type": "integer"},
-            "content": {"type": "text"},
-            "sent_at": {"type": "date"},
-            "author_id": {"type": "integer"},
-            "thread_id": {"type": "integer"},
+            "id": {"type": "keyword"},                     # UUID
+            "thread_id": {"type": "keyword"},              # UUID
+            "user_id": {"type": "keyword"},                # UUID
+            "type": {"type": "keyword"},                   # enum text/audio/file
+            "content": {"type": "text"},                   # texto libre
+            "paths": {"type": "keyword"},                  # lista de strings
+            "created_at": {"type": "date"},
+            "updated_at": {"type": "date"},
+            "deleted_at": {"type": "date"},
         }
     }
 }

@@ -47,14 +47,13 @@ class Receive:
 		self.channel = self.connection.channel()
 
 		# Declaración de exchanges de tipo topic*
-		self.channel.exchange_declare(exchange='messages', exchange_type='topic')
+		# self.channel.exchange_declare(exchange='messages', exchange_type='topic')
 		self.channel.exchange_declare(exchange='channels', exchange_type='topic')
 		self.channel.exchange_declare(exchange="files", exchange_type="topic")
 		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
 		# Declaración de cola para mensajes
-		self.channel.queue_declare('messages', durable=True)
-		self.channel.queue_bind(exchange='messages', queue="messages", routing_key="messages.*.*")
+		self.channel.queue_declare(queue="messages_service", durable=True)
 		
 		# Declaración de cola para canales
 		self.channel.queue_declare('channels', durable=True)
@@ -69,7 +68,7 @@ class Receive:
 		self.channel.queue_bind(exchange='threads', queue='threads', routing_key="threads.*.*")
 		
 		# Consumidores y callbacks (separados)
-		self.channel.basic_consume(queue='messages', on_message_callback=self.callback_messages)
+		self.channel.basic_consume(queue='messages_service', on_message_callback=self.callback_messages)
 		self.channel.basic_consume(queue='channels', on_message_callback=self.callback_channels)
 		self.channel.basic_consume(queue="files", on_message_callback=self.callback_files)
 		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
@@ -80,27 +79,27 @@ class Receive:
 		body = json.loads(body)
 		routing_key = method.routing_key 
 
-		if routing_key.startswith("messages.create"):
+		if routing_key.startswith("messages_service"):
 			logging.info(f"Evento de creación de mensaje recibido: {body['id']}")
 			try:
 				message_create(body)
 				logging.info(f"Nuevo mensaje creado: {body['id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
-		elif routing_key.startswith("messages.update"):
-			logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
-			try:
-				message_update(body)
-				logging.info(f"Mensaje actualizado: {body['id']}")
-			except Exception as e:
-				logging.error(f"⚠️ Ocurrió un error: {e}")
-		elif routing_key.startswith("messages.delete"):
-			logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
-			try:
-				message_delete(body)
-				logging.info(f"Mensaje eliminado: {body['name']} 👋")
-			except Exception as e:
-				logging.error(f"⚠️ Ocurrió un error: {e}")
+		# elif routing_key.startswith("messages.update"):
+		# 	logging.info(f"Evento de actualización de mensaje recibido: {body['id']}")
+		# 	try:
+		# 		message_update(body)
+		# 		logging.info(f"Mensaje actualizado: {body['id']}")
+		# 	except Exception as e:
+		# 		logging.error(f"⚠️ Ocurrió un error: {e}")
+		# elif routing_key.startswith("messages.delete"):
+		# 	logging.info(f"Evento de eliminación de mensaje recibido: {body['name']}")
+		# 	try:
+		# 		message_delete(body)
+		# 		logging.info(f"Mensaje eliminado: {body['name']} 👋")
+		# 	except Exception as e:
+		# 		logging.error(f"⚠️ Ocurrió un error: {e}")
 		else:
 			logging.warning(f"Evento no reconocido: {routing_key}")
 

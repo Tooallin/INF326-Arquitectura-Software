@@ -4,9 +4,10 @@ import json
 
 def search_message(
 	q: str | None,
-	author_id: int | None,
+	user_id: int | None,
 	thread_id: int | None,
     message_id: int | None,  # 👈 nuevo parámetro opcional
+    type_: str | None,
 	limit: int,
 	offset: int
 ):
@@ -24,12 +25,14 @@ def search_message(
                 "fuzziness": "AUTO"
             }
         })
-    if author_id:
-        filters.append({"term": {"author_id": author_id}})
+    if user_id:
+        filters.append({"term": {"user_id": user_id}})
     if thread_id:
         filters.append({"term": {"thread_id": thread_id}})
     if message_id:
         filters.append({"term": {"id": message_id}})
+    if type_:                                    # 👈 coincidencia EXACTA
+        filters.append({"term": {"type": type_}}) # type = "text" | "audio" | "file"
 
     # Si no hay palabra clave ni filtros, devolver todo el índice (limitado)
     if not must_clauses and not filters:
@@ -45,7 +48,7 @@ def search_message(
     # 🔸 Construir cuerpo completo
     body = {
         "query": query,
-        "sort": [{"sent_at": {"order": "desc"}}],
+        "sort": [{"created_at": {"order": "desc"}}],
         "from": offset,
         "size": limit
     }
@@ -57,9 +60,15 @@ def search_message(
         {
             "id": hit["_source"]["id"],
             "content": hit["_source"]["content"],
-            "sent_at": hit["_source"]["sent_at"],
-            "author_id": hit["_source"]["author_id"],
+            "created_at": hit["_source"]["created_at"],
+            "user_id": hit["_source"]["user_id"],
             "thread_id": hit["_source"]["thread_id"],
+            "type": hit["_source"]["type"],              # opcional
+            "paths": hit["_source"].get("paths"),        # opcional
+            # 🗓️ FECHAS
+            "created_at": hit["_source"].get("created_at"),
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
         }
         for hit in result["hits"]["hits"]
     ]
