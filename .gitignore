@@ -3,3 +3,4 @@ venv
 get-pip.py
 api/endpoints/__pycache__
 k8s-inf326-nyc1-kubeconfig/
+k8s-inf326-nyc1-kubeconfig-2/
