@@ -87,7 +87,4 @@ def search_channel(
         for hit in result["hits"]["hits"]
     ]
 
-    return {
-        "total": result["hits"]["total"]["value"],
-        "results": hits
-    }
+    return hits
