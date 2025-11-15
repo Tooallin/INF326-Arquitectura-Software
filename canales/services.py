@@ -81,8 +81,15 @@ def search_channel(
     hits = [
         {
             "id": hit["_source"]["id"],
-            "title": hit["_source"]["title"],
+            "owner_id": hit["_source"]["owner_id"],
+            "name": hit["_source"]["name"],
+            "users": hit["_source"].get("users", []),
+            "threads": hit["_source"].get("threads", []),
+            "channel_type": hit["_source"]["channel_type"],
+            "is_active": hit["_source"]["is_active"],
             "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
         }
         for hit in result["hits"]["hits"]
     ]
