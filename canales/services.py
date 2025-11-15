@@ -5,6 +5,9 @@ import json
 def search_channel(
 	q: str | None,
 	channel_id: int | None,
+    owner_id: str | None,
+    channel_type: str | None,
+    is_active: bool | None,
 	limit: int,
 	offset: int
 ):
@@ -20,7 +23,7 @@ def search_channel(
             {
                 "multi_match": {
                     "query": q,
-                    "fields": ["title^3"],
+                    "fields": ["name^3"],
                     "type": "best_fields",
                     "operator": "and",
                     "fuzziness": "1"  # mínima tolerancia (mejor que AUTO)
@@ -30,7 +33,7 @@ def search_channel(
             {
                 "multi_match": {
                     "query": q,
-                    "fields": ["title^4"],
+                    "fields": ["name^4"],
                     "type": "phrase_prefix"
                 }
             }
@@ -45,7 +48,13 @@ def search_channel(
             }
         })
     if channel_id:
-        filters.append({"term": {"id": channel_id}})
+        filters.append({"term": {"channel_id": channel_id}})
+    if owner_id:
+        filters.append({"term": {"owner_id": owner_id}})
+    if channel_type:
+        filters.append({"term": {"channel_type": channel_type}})
+    if is_active is not None:
+        filters.append({"term": {"is_active": is_active}})
 
     # Si no hay palabra clave ni filtros, devolver todo el índice (limitado)
     if not must_clauses and not filters:

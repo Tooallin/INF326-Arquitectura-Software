@@ -48,7 +48,7 @@ class Receive:
 
 		# Declaración de exchanges de tipo topic*
 		# self.channel.exchange_declare(exchange='messages', exchange_type='topic')
-		self.channel.exchange_declare(exchange='channels', exchange_type='topic')
+		self.channel.exchange_declare(exchange='channel_service_exchange', exchange_type='topic')
 		self.channel.exchange_declare(exchange="files", exchange_type="topic")
 		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
@@ -56,8 +56,8 @@ class Receive:
 		self.channel.queue_declare(queue="messages_service", durable=True)
 		
 		# Declaración de cola para canales
-		self.channel.queue_declare('channels', durable=True)
-		self.channel.queue_bind(exchange='channels', queue="channels", routing_key="channels.*.*")
+		self.channel.queue_declare('search_service_of_channel_service', durable=True)
+		self.channel.queue_bind(exchange='channel_service_exchange', queue="search_service_of_channel_service", routing_key="channelService.v1.channel.*")
 
 		# Declaración de cola para archivos
 		self.channel.queue_declare("files", durable=True)
@@ -69,7 +69,7 @@ class Receive:
 		
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages_service', on_message_callback=self.callback_messages)
-		self.channel.basic_consume(queue='channels', on_message_callback=self.callback_channels)
+		self.channel.basic_consume(queue='search_service_of_channel_service', on_message_callback=self.callback_channels)
 		self.channel.basic_consume(queue="files", on_message_callback=self.callback_files)
 		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
 
@@ -109,21 +109,21 @@ class Receive:
 		body = json.loads(body)
 		routing_key = method.routing_key 
 
-		if routing_key.startswith("channels.create"):
+		if routing_key.startswith("channelService.v1.channel.created"):
 			logging.info(f"Evento de creación de canal recibido: {body['id']}")
 			try:
 				channel_create(body)
 				logging.info(f"Nuevo canal creado: {body['id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
-		elif routing_key.startswith("channels.update"):
+		elif routing_key.startswith("channelService.v1.channel.updated") or routing_key.startswith("channelService.v1.channel.reactivated"):
 			logging.info(f"Evento de actualización de canal recibido: {body['id']}")
 			try:
 				channel_update(body)
 				logging.info(f"Canal actualizado: {body['id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
-		elif routing_key.startswith("channels.delete"):
+		elif routing_key.startswith("channelService.v1.channel.deleted"):
 			logging.info(f"Evento de eliminación de canal recibido: {body['name']}")
 			try:
 				channel_delete(body)

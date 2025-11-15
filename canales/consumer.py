@@ -29,12 +29,26 @@ def delete(body: dict):
     Elimina un mensaje existente en Elasticsearch.
     Requiere que body contenga el campo 'id'.
     """
+    # es = get_client()
+    # channel_id = body.get("id")
+    # if not channel_id:
+    #     raise ValueError("El cuerpo debe incluir un campo 'id' para eliminar el documento.")
+
+    # try:
+    #     es.delete(index=index_name, id=channel_id)
+    # except Exception as e:
+    #     raise
+
     es = get_client()
     channel_id = body.get("id")
     if not channel_id:
-        raise ValueError("El cuerpo debe incluir un campo 'id' para eliminar el documento.")
+        raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
 
     try:
-        es.delete(index=index_name, id=channel_id)
+        es.update(
+            index=index_name,
+            id=channel_id,
+            body={"doc": body}  # 👈 se actualizan solo los campos presentes
+        )
     except Exception as e:
         raise

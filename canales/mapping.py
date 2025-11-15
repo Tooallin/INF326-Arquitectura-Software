@@ -1,13 +1,26 @@
-# Nombre del indice para los archivos en ElasticSearch
+# Nombre del indice para los canales en ElasticSearch
 index_name = "channels"
 
-# Mappings del indice Files
+# Mappings del indice canales
 mapping = {
-	"mappings": {
-		"properties": {
-			"id": {"type": "integer"},
-			"title": {"type": "text"},
-			"created_at": {"type": "date"},
-		}
-	}
+    "mappings": {
+        "properties": {
+            "id": {"type": "keyword"},
+            "owner_id": {"type": "keyword"},
+            "name": {"type": "text"},
+            "users": {
+                "type": "nested",
+                "properties": {
+                    "id": {"type": "keyword"},
+                    "joined_at": {"type": "date", "format": "epoch_second"}
+                }
+            },
+            "threads": {"type": "keyword"},
+            "channel_type": {"type": "keyword"},
+            "is_active": {"type": "boolean"},
+            "created_at": {"type": "date", "format": "epoch_second"},
+            "updated_at": {"type": "date", "format": "epoch_second"},
+            "deleted_at": {"type": "date", "format": "epoch_second"}
+        }
+    }
 }
