@@ -18,7 +18,6 @@ class ChannelSchema(BaseModel):
 
     users: Optional[List[ChannelUser]]  # nested users[]
 
-    threads: Optional[List[UUID]]       # keyword[] → lista de UUID
     channel_type: Optional[str]         # keyword
     is_active: Optional[bool]
 
