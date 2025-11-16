@@ -64,7 +64,7 @@ def svc_searchfiles(q=None, file_id=None, thread_id=None, message_id=None, limit
 			}
 		}
 
-	resp = es.search(
+	result = es.search(
 		index=index,
 		query=query,
 		from_=offset,
@@ -72,8 +72,21 @@ def svc_searchfiles(q=None, file_id=None, thread_id=None, message_id=None, limit
 		track_total_hits=True
 	)
 
-	results = [h["_source"] for h in resp["hits"]["hits"]]
-	return {
-		"total": resp["hits"]["total"]["value"] if "hits" in resp else 0,
-		"results": results
-	}
+	 hits = [
+        {
+            "id": hit["_id"],
+            "filename": hit["_source"]["filename"],
+            "mime_type": hit["_source"]["mime_type"],
+            "size": hit["_source"]["size"],
+            "bucket": hit["_source"]["bucket"],
+            "object_key": hit["_source"]["object_key"],
+            "message_id": hit["_source"].get("message_id"),
+            "thread_id": hit["_source"].get("thread_id"),
+            "checksum_sha256": hit["_source"].get("checksum_sha256"),
+            "created_at": hit["_source"]["created_at"],
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+
+    return hits
