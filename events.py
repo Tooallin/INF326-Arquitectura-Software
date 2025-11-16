@@ -113,7 +113,9 @@ class Receive:
 		if routing_key.startswith("channelService.v1.channel.created"):
 			logging.info(f"Evento de creación de canal recibido: {body['channel_id']}")
 			try:
-				channel_create(body)
+				response = requests.get(f"https://channel-api.inf326.nur.dev/v1/channels/{body['channel_id']}")
+				payload = response.json()
+				channel_create(payload)
 				logging.info(f"Nuevo canal creado: {body['channel_id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
