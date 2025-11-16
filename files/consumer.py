@@ -7,11 +7,12 @@ def create_file(body: Dict[str, any]):
 	# Llamamos al cliente de ElasticSearch
 	es = get_client()
 
+    file_id = body.pop("id", None)
 	try:
 		# Creamos/actualizamos un archivo
 		res = es.index(
 			index=index_name,
-			id=body["id"],
+			id=file_id,
 			document=body,
 			op_type="create",
 		)
@@ -26,7 +27,7 @@ def delete_file(body: dict):
     """
 
     es = get_client()
-    file_id = body.get("file_id")
+    file_id = body.pop("file_id", None)
     if not channel_id:
         raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
 

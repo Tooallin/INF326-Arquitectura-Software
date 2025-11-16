@@ -81,10 +81,11 @@ class Receive:
 		routing_key = method.routing_key 
 
 		if routing_key.startswith("messages_service"):
-			logging.info(f"Evento de creación de mensaje recibido: {body['id']}")
+			message_id = body['id']
+			logging.info(f"Evento de creación de mensaje recibido: {message_id}")
 			try:
 				message_create(body)
-				logging.info(f"Nuevo mensaje creado: {body['id']}")
+				logging.info(f"Nuevo mensaje creado: {message_id}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		# elif routing_key.startswith("messages.update"):
@@ -115,13 +116,13 @@ class Receive:
 			try:
 				response = requests.get(f"https://channel-api.inf326.nur.dev/v1/channels/{body['channel_id']}")
 				payload = response.json()
-				body.pop("_id", None)
 				channel_create(payload)
 				logging.info(f"Nuevo canal creado: {body['channel_id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("channelService.v1.channel.updated") or routing_key.startswith("channelService.v1.channel.reactivated"):
-			logging.info(f"Evento de actualización de canal recibido: {body['channel_id']}")
+			channel_id = body['channel_id']
+			logging.info(f"Evento de actualización de canal recibido: {channel_id}")
 			try:
 				if routing_key.startswith("channelService.v1.channel.updated"):
 					updated_fields = body.pop("updated_fields", {})  # lo sacamos del diccionario
@@ -134,14 +135,15 @@ class Receive:
 					channel_update(flattened)
 				else:
 					channel_update(body)
-				logging.info(f"Canal actualizado: {body['channel_id']}")
+				logging.info(f"Canal actualizado: {channel_id}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("channelService.v1.channel.deleted"):
-			logging.info(f"Evento de eliminación de canal recibido: {body['channel_id']}")
+			channel_id = body['channel_id']
+			logging.info(f"Evento de eliminación de canal recibido: {channel_id}")
 			try:
-				channel_delete(body)
-				logging.info(f"Canal eliminado: {body['channel_id']} 👋")
+				channel_update(body)
+				logging.info(f"Canal eliminado: {channel_id} 👋")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		else:
@@ -162,12 +164,13 @@ class Receive:
 		try:
 			if rk.startswith("files.added.v1"):
 				p = payload.get("data")
+				file_id = p['file_id']
 				logging.info(f"[files.added.v1] id={p['file_id']}")
 				try:
 					response = requests.get(f"http://134.199.176.197/v1/files/{p['file_id']}")
 					payload = response.json()
 					file_create(payload)
-					logging.info(f"Nuevo archivo creado: {payload.get("id")}")
+					logging.info(f"Nuevo archivo creado: {file_id}")
 				except Exception as e:
 					logging.error(f"Error al crear un archivo: {e}")
 			# elif rk.startswith("files.update"):
@@ -175,9 +178,10 @@ class Receive:
 			# 	# TODO file_update(payload)
 			elif rk.startswith("files.deleted.v1"):
 				p = payload.get("data")
+				file_id = p['file_id']
 				p["deleted_at"] = payload.get("occurred_at")
-				logging.info(f"[files.deleted.v1] id={p['file_id']}")
 				file_delete(p)
+				logging.info(f"[files.deleted.v1] id={file_id}")
 			else:
 				logging.warning(f"[files.*] routing no reconocido: {rk}")
 			ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -197,16 +201,21 @@ class Receive:
 		rk = method.routing_key
 		try:
 			if rk.startswith("thread.created"):
-				logging.info(f"[thread.created] id={payload.get("id")} title={payload.get("title")}")
+				thread_id = payload.get("id")
+				thread_title = payload.get("title")
 				create_thread(payload)
+				logging.info(f"[thread.created] id={thread_id} title={thread_title}")
 			elif rk.startswith("thread.updated") or rk.startswith("thread.archieved"):
-				logging.info(f"[thread.updated] id={payload.get("id")} title={payload.get("title")}")
+				thread_id = payload.get("id")
+				thread_title = payload.get("title")
 				update_thread(payload)
+				logging.info(f"[thread.updated] id={thread_id} title={thread_title}")
 			elif rk.startswith("thread.deleted"):
-				logging.info(f"[thread.deleted] id={payload.get("id")}")
+				thread_id = payload.get("id")
 				delete_thread(payload)
+				logging.info(f"[thread.deleted] id={thread_id}")
 			else:
-				logging.warning(f"[threads.*] routing no reconocido: {rk}")
+				logging.warning(f"[thread.*] routing no reconocido: {rk}")
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
 			logging.error(f"Error en callback_files: {e}")

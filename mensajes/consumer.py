@@ -3,15 +3,16 @@ from elastic_search.connection import get_client
 
 def create(body: dict):
     es = get_client()
-    
+    message_id = body.pop("id", None)
+
     try:
-        es.index(index=index_name, id=body["id"], document=body)
+        es.index(index=index_name, id=message_id, document=body)
     except Exception as e:
         raise
 
 def update(body: dict):
     es = get_client()
-    message_id = body.get("id")
+    message_id = body.pop("id", None)
     if not message_id:
         raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
 
@@ -30,7 +31,7 @@ def delete(body: dict):
     Requiere que body contenga el campo 'id'.
     """
     es = get_client()
-    message_id = body.get("id")
+    message_id = body.pop("id", None)
     if not message_id:
         raise ValueError("El cuerpo debe incluir un campo 'id' para eliminar el documento.")
 

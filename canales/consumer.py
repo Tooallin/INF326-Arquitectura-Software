@@ -4,7 +4,7 @@ from elastic_search.connection import get_client
 def create(body: dict):
     es = get_client()
     
-    channel_id = body.pop("id", None)
+    channel_id = body.pop("_id", None)
     try:
         es.index(index=index_name, id=channel_id, document=body)
     except Exception as e:

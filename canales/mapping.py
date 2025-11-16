@@ -12,14 +12,14 @@ mapping = {
                 "type": "nested",
                 "properties": {
                     "id": {"type": "keyword"},
-                    "joined_at": {"type": "date", "format": "epoch_second"}
+                    "joined_at": {"type": "double"}
                 }
             },
             "channel_type": {"type": "keyword"},
             "is_active": {"type": "boolean"},
-            "created_at": {"type": "date", "format": "epoch_second"},
-            "updated_at": {"type": "date", "format": "epoch_second"},
-            "deleted_at": {"type": "date", "format": "epoch_second"}
+            "created_at": { "type": "double" },
+            "updated_at": { "type": "double" },
+            "deleted_at": { "type": "double" }
         }
     }
 }
