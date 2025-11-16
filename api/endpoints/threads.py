@@ -14,7 +14,7 @@ class ThreadSchema(BaseModel):
     status: str
     meta: Optional[dict[str, Any]] = None
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
 
 @router.get("/id/{thread_id}", response_model=List[ThreadSchema])
