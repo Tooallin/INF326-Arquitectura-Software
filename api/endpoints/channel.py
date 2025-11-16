@@ -30,7 +30,7 @@ class ChannelSchema(BaseModel):
 
 @router.get("/search_channel", response_model=List[ChannelSchema])
 def SearchChannel(
-	q: str | None = Query(None, description="Palabra clave a buscar en los mensajes"),
+    q: str | None = Query(None, description="Palabra clave a buscar en los mensajes"),
     channel_id: int | None = Query(None, description="Filtrar por ID de canal"),
     owner_id: str | None = Query(None, description="Filtrar por ID de propietario"),
     channel_type: str | None = Query(None, description="Filtrar por tipo de canal"),
@@ -38,4 +38,4 @@ def SearchChannel(
     limit: int = Query(10, ge=1, le=100, description="Cantidad máxima de resultados (por defecto 10)"),
     offset: int = Query(0, ge=0, description="Desplazamiento de resultados (paginación)")
 ):
-	return search_channel(q=q, channel_id=channel_id, owner_id=owner_id, channel_type=channel_type, is_active=is_active, limit=limit, offset=offset)
+    return search_channel(q=q, channel_id=channel_id, owner_id=owner_id, channel_type=channel_type, is_active=is_active, limit=limit, offset=offset)

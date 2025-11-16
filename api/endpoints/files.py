@@ -1,11 +1,28 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, Query
 from files.services import svc_searchfiles
+from pydantic import BaseModel
+from datetime import datetime
 
 router = APIRouter()
 
+class FileSchema(BaseModel):
+	id: str
+	filename: str
+	mime_type: str
+	size: int
+	bucket: str
+	object_key: str
+
+	message_id: Optional[str] = None
+	thread_id: Optional[str] = None
+	checksum_sha256: Optional[str] = None
+
+	created_at: datetime
+	deleted_at: Optional[datetime] = None
+
 # Buscar un archivo segun parametros
-@router.get("/search_files")
+@router.get("/search_files", response_model=List[FileSchema])
 def SearchFiles(
 	q: Optional[str] = Query(None, description="Palabra clave a buscar en los archivos (nombre o contenido)"),
 	file_id: Optional[str] = Query(None, description="Filtrar por ID de hilo asociado"),
