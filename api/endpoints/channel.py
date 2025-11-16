@@ -8,12 +8,12 @@ from pydantic import BaseModel
 router = APIRouter()
 
 class ChannelUser(BaseModel):
-    id: UUID
+    id: str
     joined_at: Optional[datetime]  # Elasticsearch epoch_second → datetime
 
 class ChannelSchema(BaseModel):
-    id: UUID
-    owner_id: Optional[UUID]
+    id: str
+    owner_id: Optional[str]
     name: Optional[str]
 
     users: Optional[List[ChannelUser]]  # nested users[]

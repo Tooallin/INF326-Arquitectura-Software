@@ -195,14 +195,14 @@ class Receive:
 		
 		rk = method.routing_key
 		try:
-			if rk.startswith("threads.create"):
-				logging.info(f"[threads.create] id={payload.get("id")} title={payload.get("title")}")
+			if rk.startswith("thread.created"):
+				logging.info(f"[thread.created] id={payload.get("id")} title={payload.get("title")}")
 				create_thread(payload)
-			elif rk.startswith("threads.update"):
-				logging.info(f"[threads.update] id={payload.get("id")} title={payload.get("title")}")
+			elif rk.startswith("thread.updated") or rk.startswith("thread.archieved")::
+				logging.info(f"[thread.updated] id={payload.get("id")} title={payload.get("title")}")
 				update_thread(payload)
-			elif rk.startswith("threads.delete"):
-				logging.info(f"[threads.delete] id={payload.get("id")} title={payload.get("title")}")
+			elif rk.startswith("thread.deleted"):
+				logging.info(f"[thread.deleted] id={payload.get("id")}")
 				delete_thread(payload)
 			else:
 				logging.warning(f"[threads.*] routing no reconocido: {rk}")
