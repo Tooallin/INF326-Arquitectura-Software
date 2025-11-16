@@ -115,6 +115,7 @@ class Receive:
 			try:
 				response = requests.get(f"https://channel-api.inf326.nur.dev/v1/channels/{body['channel_id']}")
 				payload = response.json()
+				body.pop("_id", None)
 				channel_create(payload)
 				logging.info(f"Nuevo canal creado: {body['channel_id']}")
 			except Exception as e:
