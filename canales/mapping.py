@@ -15,7 +15,6 @@ mapping = {
                     "joined_at": {"type": "date", "format": "epoch_second"}
                 }
             },
-            "threads": {"type": "keyword"},
             "channel_type": {"type": "keyword"},
             "is_active": {"type": "boolean"},
             "created_at": {"type": "date", "format": "epoch_second"},
