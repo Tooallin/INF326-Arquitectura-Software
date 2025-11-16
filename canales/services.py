@@ -80,7 +80,7 @@ def search_channel(
 
     hits = [
         {
-            "id": hit["_source"]["id"],
+            "id": hit["_id"],
             "owner_id": hit["_source"]["owner_id"],
             "name": hit["_source"]["name"],
             "users": hit["_source"].get("users", []),

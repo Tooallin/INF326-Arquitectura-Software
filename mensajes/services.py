@@ -58,7 +58,7 @@ def search_message(
 
     hits = [
         {
-            "id": hit["_source"]["id"],
+            "id": hit["_id"],
             "content": hit["_source"]["content"],
             "user_id": hit["_source"]["user_id"],
             "thread_id": hit["_source"]["thread_id"],
