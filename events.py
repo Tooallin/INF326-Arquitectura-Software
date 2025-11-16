@@ -120,7 +120,17 @@ class Receive:
 		elif routing_key.startswith("channelService.v1.channel.updated") or routing_key.startswith("channelService.v1.channel.reactivated"):
 			logging.info(f"Evento de actualización de canal recibido: {body['channel_id']}")
 			try:
-				channel_update(body)
+				if routing_key.startswith("channelService.v1.channel.updated"):
+					updated_fields = body.pop("updated_fields", {})  # lo sacamos del diccionario
+
+					# aplanar el payload recibido
+					flattened = {
+						**body,
+						**updated_fields,
+					}
+					channel_update(flattened)
+				else:
+					channel_update(body)
 				logging.info(f"Canal actualizado: {body['channel_id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
