@@ -51,7 +51,7 @@ class Receive:
 		# self.channel.exchange_declare(exchange='messages', exchange_type='topic')
 		self.channel.exchange_declare(exchange='channel_service_exchange', exchange_type='topic', durable=True)
 		self.channel.exchange_declare(exchange="files", exchange_type="topic", durable=True)
-		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
+		self.channel.exchange_declare(exchange='platform.events', exchange_type='topic', durable=True)
 
 		# Declaración de cola para mensajes
 		self.channel.queue_declare(queue="messages_service", durable=True)
@@ -65,14 +65,14 @@ class Receive:
 		self.channel.queue_bind(exchange="files", queue="search_service_of_files_service", routing_key="files.*.*")
 
 		# Declaración de cola para hilos
-		self.channel.queue_declare(queue='threads', durable=True)
-		self.channel.queue_bind(exchange='threads', queue='threads', routing_key="threads.*.*")
+		self.channel.queue_declare(queue='search_service_of_threads_service', durable=True)
+		self.channel.queue_bind(exchange='platform.events', queue='search_service_of_threads_service', routing_key="thread.*")
 		
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages_service', on_message_callback=self.callback_messages)
 		self.channel.basic_consume(queue='search_service_of_channel_service', on_message_callback=self.callback_channels)
 		self.channel.basic_consume(queue="search_service_of_files_service", on_message_callback=self.callback_files)
-		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
+		self.channel.basic_consume(queue="search_service_of_threads_service", on_message_callback=self.callback_threads)
 
 		self.channel.start_consuming()
 
@@ -198,7 +198,7 @@ class Receive:
 			if rk.startswith("thread.created"):
 				logging.info(f"[thread.created] id={payload.get("id")} title={payload.get("title")}")
 				create_thread(payload)
-			elif rk.startswith("thread.updated") or rk.startswith("thread.archieved")::
+			elif rk.startswith("thread.updated") or rk.startswith("thread.archieved"):
 				logging.info(f"[thread.updated] id={payload.get("id")} title={payload.get("title")}")
 				update_thread(payload)
 			elif rk.startswith("thread.deleted"):
