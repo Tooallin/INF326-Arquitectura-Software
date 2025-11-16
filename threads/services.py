@@ -10,23 +10,23 @@ def get_by_id(thread_id):
             }
         }
     }
-    response = client.search(index=index_name, body=body)
-    results = [hit["_source"] for hit in response["hits"]["hits"]]
-    return results        
+    result = client.search(index=index_name, body=body)
+    hits = [
+        {
+            "id": hit["_id"],
+            "channel_id": hit["_source"]["channel_id"],
+            "title": hit["_source"]["title"],
+            "created_by": hit["_source"]["created_by"],
+            "status": hit["_source"].get("status"),
+            "meta": hit["_source"].get("meta"),
+            "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+    return hits
     
-# def get_by_category(category):
-#     client = get_client()
-#     body = {
-#         "query": {
-#             "term": {
-#                 "category": category
-#             }
-#         }
-#     }
-#     response = client.search(index=index_name, body=body)
-#     results = [hit["_source"] for hit in response["hits"]["hits"]]
-#     return results
-
 def get_by_author(author_id):
     client = get_client()
     body = {
@@ -36,9 +36,22 @@ def get_by_author(author_id):
             }
         }
     }
-    response = client.search(index=index_name, body=body)
-    results = [hit["_source"] for hit in response["hits"]["hits"]]
-    return results
+    result = client.search(index=index_name, body=body)
+    hits = [
+        {
+            "id": hit["_id"],
+            "channel_id": hit["_source"]["channel_id"],
+            "title": hit["_source"]["title"],
+            "created_by": hit["_source"]["created_by"],
+            "status": hit["_source"].get("status"),
+            "meta": hit["_source"].get("meta"),
+            "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+    return hits
 
 def get_by_date_range(start_date, end_date):
     client = get_client()
@@ -52,22 +65,22 @@ def get_by_date_range(start_date, end_date):
             }
         }
     }
-    response = client.search(index=index_name, body=body)
-    results = [hit["_source"] for hit in response["hits"]["hits"]]
-    return results
-
-# def get_by_tag(tag):
-#     client = get_client()
-#     body = {
-#         "query": {
-#             "term": {
-#                 "tags": tag
-#             }
-#         }
-#     }
-#     response = client.search(index=index_name, body=body)
-#     results = [hit["_source"] for hit in response["hits"]["hits"]]
-#     return results
+    result = client.search(index=index_name, body=body)
+    hits = [
+        {
+            "id": hit["_id"],
+            "channel_id": hit["_source"]["channel_id"],
+            "title": hit["_source"]["title"],
+            "created_by": hit["_source"]["created_by"],
+            "status": hit["_source"].get("status"),
+            "meta": hit["_source"].get("meta"),
+            "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+    return hits
 
 def get_by_keyword(keyword):
     client = get_client()
@@ -79,9 +92,22 @@ def get_by_keyword(keyword):
             }
         }
     }
-    response = client.search(index=index_name, body=body)
-    results = [hit["_source"] for hit in response["hits"]["hits"]]
-    return results
+    result = client.search(index=index_name, body=body)
+    hits = [
+        {
+            "id": hit["_id"],
+            "channel_id": hit["_source"]["channel_id"],
+            "title": hit["_source"]["title"],
+            "created_by": hit["_source"]["created_by"],
+            "status": hit["_source"].get("status"),
+            "meta": hit["_source"].get("meta"),
+            "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+    return hits
 
 def get_by_status(status):
     client = get_client()
@@ -93,6 +119,19 @@ def get_by_status(status):
         }
     }
 
-    response = client.search(index=index_name, body=body)
-    results = [hit["_source"] for hit in response["hits"]["hits"]]
-    return results
+    result = client.search(index=index_name, body=body)
+    hits = [
+        {
+            "id": hit["_id"],
+            "channel_id": hit["_source"]["channel_id"],
+            "title": hit["_source"]["title"],
+            "created_by": hit["_source"]["created_by"],
+            "status": hit["_source"].get("status"),
+            "meta": hit["_source"].get("meta"),
+            "created_at": hit["_source"]["created_at"],
+            "updated_at": hit["_source"].get("updated_at"),
+            "deleted_at": hit["_source"].get("deleted_at"),
+        }
+        for hit in result["hits"]["hits"]
+    ]
+    return hits
