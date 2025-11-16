@@ -4,14 +4,15 @@ from elastic_search.connection import get_client
 def create(body: dict):
     es = get_client()
     
+    channel_id = body.pop("channel_id", None)
     try:
-        es.index(index=index_name, id=body["channel_id"], document=body)
+        es.index(index=index_name, id=channel_id, document=body)
     except Exception as e:
         raise
 
 def update(body: dict):
     es = get_client()
-    channel_id = body.get("channel_id")
+    channel_id = body.pop("channel_id", None)
     if not channel_id:
         raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
 
@@ -40,7 +41,7 @@ def delete(body: dict):
     #     raise
 
     es = get_client()
-    channel_id = body.get("channel_id")
+    channel_id = body.pop("channel_id", None)
     if not channel_id:
         raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
 
