@@ -4,7 +4,7 @@ from files.mapping import index_name
 from elastic_search.connection import get_client
 from elasticsearch import helpers
 
-def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pages_max=None, limit=10, offset=0):
+def svc_searchfiles(q=None, file_id=None, thread_id=None, message_id=None, limit=10, offset=0):
 	es = get_client()
 	index = index_name  # "files"
 
@@ -24,7 +24,7 @@ def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pag
 		should.append({
 			"multi_match": {
 				"query": q,
-				"fields": ["name^3", "content"],
+				"fields": ["filename^3"],
 				"type": "best_fields",
 				"operator": "and",  # AND entre términos, OR entre campos
 			}
@@ -33,21 +33,23 @@ def svc_searchfiles(q=None, thread_id=None, message_id=None, pages_min=None, pag
 		should.append({
 			"multi_match": {
 				"query": q,
-				"fields": ["name^4", "content"],
+				"fields": ["filename^4"],
 				"type": "phrase_prefix"
 			}
 		})
 
 	# Filtros exactos
+	if file_id is not None:
+		filter_.append({"term": {"file_id": file_id}})
 	if thread_id is not None:
 		filter_.append({"term": {"thread_id": thread_id}})
 	if message_id is not None:
 		filter_.append({"term": {"message_id": message_id}})
-	if pages_min is not None or pages_max is not None:
-		rg = {}
-		if pages_min is not None: rg["gte"] = pages_min
-		if pages_max is not None: rg["lte"] = pages_max
-		filter_.append({"range": {"pages": rg}})
+	# if pages_min is not None or pages_max is not None:
+	# 	rg = {}
+	# 	if pages_min is not None: rg["gte"] = pages_min
+	# 	if pages_max is not None: rg["lte"] = pages_max
+	# 	filter_.append({"range": {"pages": rg}})
 
 	# Query final: si no hay texto ni filtros => match_all
 	if not q and not filter_:

@@ -2,10 +2,11 @@ import json
 import pika
 import logging
 import os
+import requests
 
 from mensajes.consumer import create as message_create, update as message_update, delete as message_delete
 from canales.consumer import create as channel_create, update as channel_update, delete as channel_delete
-from files.consumer import create_file as file_create
+from files.consumer import create_file as file_create, delete_file as file_delete
 from threads.consumer import *
 
 logging.getLogger("pika").setLevel(logging.ERROR)
@@ -60,8 +61,8 @@ class Receive:
 		self.channel.queue_bind(exchange='channel_service_exchange', queue="search_service_of_channel_service", routing_key="channelService.v1.channel.*")
 
 		# Declaración de cola para archivos
-		self.channel.queue_declare("files", durable=True)
-		self.channel.queue_bind(exchange="files", queue="files", routing_key="files.*.*")
+		self.channel.queue_declare("search_service_of_files_service", durable=True)
+		self.channel.queue_bind(exchange="files", queue="search_service_of_files_service", routing_key="files.*.*")
 
 		# Declaración de cola para hilos
 		self.channel.queue_declare(queue='threads', durable=True)
@@ -70,7 +71,7 @@ class Receive:
 		# Consumidores y callbacks (separados)
 		self.channel.basic_consume(queue='messages_service', on_message_callback=self.callback_messages)
 		self.channel.basic_consume(queue='search_service_of_channel_service', on_message_callback=self.callback_channels)
-		self.channel.basic_consume(queue="files", on_message_callback=self.callback_files)
+		self.channel.basic_consume(queue="search_service_of_files_service", on_message_callback=self.callback_files)
 		self.channel.basic_consume(queue="threads", on_message_callback=self.callback_threads)
 
 		self.channel.start_consuming()
@@ -146,19 +147,24 @@ class Receive:
 		
 		rk = method.routing_key
 		try:
-			if rk.startswith("files.create"):
-				logging.info(f"[files.create] id={payload.get("id")} name={payload.get("name")}")
+			if rk.startswith("files.added.v1"):
+				p = payload.get("data")
+				logging.info(f"[files.added.v1] id={p['file_id']}")
 				try:
+					response = requests.get(f"http://134.199.176.197/v1/files/{p['file_id']}")
+					payload = response.json()
 					file_create(payload)
 					logging.info(f"Nuevo archivo creado: {payload.get("id")}")
 				except Exception as e:
 					logging.error(f"Error al crear un archivo: {e}")
-			elif rk.startswith("files.update"):
-				logging.info(f"[files.update] id={payload.get("id")} name={payload.get("name")}")
-				# TODO file_update(payload)
-			elif rk.startswith("files.delete"):
-				logging.info(f"[files.delete] id={payload.get("id")} name={payload.get("name")}")
-				# TODO file_delete(payload)
+			# elif rk.startswith("files.update"):
+			# 	logging.info(f"[files.update] id={payload.get("id")} name={payload.get("name")}")
+			# 	# TODO file_update(payload)
+			elif rk.startswith("files.deleted.v1"):
+				p = payload.get("data")
+				p["deleted_at"] = payload.get("occurred_at")
+				logging.info(f"[files.deleted.v1] id={p['file_id']}")
+				file_delete(p)
 			else:
 				logging.warning(f"[files.*] routing no reconocido: {rk}")
 			ch.basic_ack(delivery_tag=method.delivery_tag)

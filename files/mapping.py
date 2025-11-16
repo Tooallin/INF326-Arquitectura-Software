@@ -5,13 +5,42 @@ index_name = "files"
 mapping = {
 	"mappings": {
 		"properties": {
-			"id": {"type": "integer"},
-			"thread_id": {"type": "integer"},
-			"message_id": {"type": "integer"},
-			"name": {"type": "text"},
-			"content": {"type": "text"},
-			"pages": {"type": "integer"},
-			"uploaded_at": {"type": "date"},
+			"id": {
+				"type": "keyword"
+			},
+			"filename": {
+				"type": "text",
+				"fields": {
+					"raw": { "type": "keyword" }
+				}
+			},
+			"mime_type": {
+				"type": "keyword"
+			},
+			"size": {
+				"type": "integer"
+			},
+			"bucket": {
+				"type": "keyword"
+			},
+			"object_key": {
+				"type": "keyword"
+			},
+			"message_id": {
+				"type": "keyword"
+			},
+			"thread_id": {
+				"type": "keyword"
+			},
+			"checksum_sha256": {
+				"type": "keyword"
+			},
+			"created_at": {
+				"type": "date"
+			},
+			"deleted_at": {
+				"type": "date"
+			}
 		}
 	}
 }

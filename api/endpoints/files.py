@@ -8,19 +8,21 @@ router = APIRouter()
 @router.get("/search_files")
 def SearchFiles(
 	q: Optional[str] = Query(None, description="Palabra clave a buscar en los archivos (nombre o contenido)"),
-	thread_id: Optional[int] = Query(None, description="Filtrar por ID de hilo asociado"),
-	message_id: Optional[int] = Query(None, description="Filtrar por ID de mensaje asociado"),
-	pages_min: Optional[int] = Query(None, ge=1, description="Filtrar por cantidad mínima de páginas"),
-	pages_max: Optional[int] = Query(None, ge=1, description="Filtrar por cantidad máxima de páginas"),
+	file_id: Optional[str] = Query(None, description="Filtrar por ID de hilo asociado"),
+	thread_id: Optional[str] = Query(None, description="Filtrar por ID de hilo asociado"),
+	message_id: Optional[str] = Query(None, description="Filtrar por ID de mensaje asociado"),
+	# pages_min: Optional[int] = Query(None, ge=1, description="Filtrar por cantidad mínima de páginas"),
+	# pages_max: Optional[int] = Query(None, ge=1, description="Filtrar por cantidad máxima de páginas"),
 	limit: int = Query(10, ge=1, le=100, description="Cantidad máxima de resultados (por defecto 10)"),
 	offset: int = Query(0, ge=0, description="Desplazamiento de resultados (paginación)")
 ):
 	return svc_searchfiles(
 		q=q,
+		file_id=file_id,
 		thread_id=thread_id,
 		message_id=message_id,
-		pages_min=pages_min,
-		pages_max=pages_max,
+		# pages_min=pages_min,
+		# pages_max=pages_max,
 		limit=limit,
 		offset=offset
 	)

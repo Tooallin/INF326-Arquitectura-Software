@@ -18,3 +18,23 @@ def create_file(body: Dict[str, any]):
 		return res
 	except Exception:
 		raise
+
+def delete_file(body: dict):
+    """
+    Elimina un archivo existente en Elasticsearch.
+    Requiere que body contenga el campo 'id'.
+    """
+
+    es = get_client()
+    file_id = body.get("file_id")
+    if not channel_id:
+        raise ValueError("El cuerpo debe incluir un campo 'id' para actualizar el documento.")
+
+    try:
+        es.update(
+            index=index_name,
+            id=file_id,
+            body={"doc": body}  # 👈 se actualizan solo los campos presentes
+        )
+    except Exception as e:
+        raise
