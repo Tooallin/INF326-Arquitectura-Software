@@ -49,8 +49,8 @@ class Receive:
 
 		# Declaración de exchanges de tipo topic*
 		# self.channel.exchange_declare(exchange='messages', exchange_type='topic')
-		self.channel.exchange_declare(exchange='channel_service_exchange', exchange_type='topic')
-		self.channel.exchange_declare(exchange="files", exchange_type="topic")
+		self.channel.exchange_declare(exchange='channel_service_exchange', exchange_type='topic', durable=True)
+		self.channel.exchange_declare(exchange="files", exchange_type="topic", durable=True)
 		self.channel.exchange_declare(exchange='threads', exchange_type='topic')
 
 		# Declaración de cola para mensajes
