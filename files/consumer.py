@@ -4,21 +4,21 @@ from elastic_search.connection import get_client
 
 # Creamos un archivo en el indice "files"
 def create_file(body: Dict[str, any]):
-	# Llamamos al cliente de ElasticSearch
-	es = get_client()
+    # Llamamos al cliente de ElasticSearch
+    es = get_client()
 
     file_id = body.pop("id", None)
-	try:
-		# Creamos/actualizamos un archivo
-		res = es.index(
-			index=index_name,
-			id=file_id,
-			document=body,
-			op_type="create",
-		)
-		return res
-	except Exception:
-		raise
+    try:
+        # Creamos/actualizamos un archivo
+        res = es.index(
+            index=index_name,
+            id=file_id,
+            document=body,
+            op_type="create",
+        )
+        return res
+    except Exception:
+        raise
 
 def delete_file(body: dict):
     """
