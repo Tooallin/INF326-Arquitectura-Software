@@ -111,24 +111,24 @@ class Receive:
 		routing_key = method.routing_key 
 
 		if routing_key.startswith("channelService.v1.channel.created"):
-			logging.info(f"Evento de creación de canal recibido: {body['id']}")
+			logging.info(f"Evento de creación de canal recibido: {body['channel_id']}")
 			try:
 				channel_create(body)
-				logging.info(f"Nuevo canal creado: {body['id']}")
+				logging.info(f"Nuevo canal creado: {body['channel_id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("channelService.v1.channel.updated") or routing_key.startswith("channelService.v1.channel.reactivated"):
-			logging.info(f"Evento de actualización de canal recibido: {body['id']}")
+			logging.info(f"Evento de actualización de canal recibido: {body['channel_id']}")
 			try:
 				channel_update(body)
-				logging.info(f"Canal actualizado: {body['id']}")
+				logging.info(f"Canal actualizado: {body['channel_id']}")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		elif routing_key.startswith("channelService.v1.channel.deleted"):
-			logging.info(f"Evento de eliminación de canal recibido: {body['name']}")
+			logging.info(f"Evento de eliminación de canal recibido: {body['channel_id']}")
 			try:
 				channel_delete(body)
-				logging.info(f"Canal eliminado: {body['name']} 👋")
+				logging.info(f"Canal eliminado: {body['channel_id']} 👋")
 			except Exception as e:
 				logging.error(f"⚠️ Ocurrió un error: {e}")
 		else:
