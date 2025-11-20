@@ -47,6 +47,16 @@ class Receive:
 		)
 		self.channel = self.connection.channel()
 
+		# # 🔥 NUEVA conexión root
+		# credentials_root = pika.PlainCredentials("root", "secret")
+		# self.connection_root = pika.BlockingConnection(
+		# 	pika.ConnectionParameters(
+		# 		host=os.getenv("RABBITMQ_HOST"),
+		# 		credentials=credentials_root
+		# 	)
+		# )
+		# self.channel_root = self.connection_root.channel()
+
 		# Declaración de exchanges de tipo topic*
 		# self.channel.exchange_declare(exchange='messages', exchange_type='topic')
 		self.channel.exchange_declare(exchange='channel_service_exchange', exchange_type='topic', durable=True)
