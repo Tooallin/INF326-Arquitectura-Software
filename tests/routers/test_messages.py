@@ -28,7 +28,7 @@ def test_read_files():
 		for item in data
 	)
 
-def test_read_inexistent_file():
+def test_read_inexistent_message():
     response = client.get(base_url+"/message/search_message"+"?q=holamundo")
     assert response.status_code == 200
     data = response.json()
