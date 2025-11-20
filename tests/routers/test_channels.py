@@ -1,8 +1,6 @@
 import requests
 base_url = os.getenv("BASE_URL", "http://search_service:8000/api")
 
-# from base import base_url
-
 def test_read_channels():
     response = requests.get(base_url+"/channel/search_channel")
     assert response.status_code == 200
