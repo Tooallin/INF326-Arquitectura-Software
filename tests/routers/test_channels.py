@@ -1,8 +1,13 @@
-import requests
-base_url = os.getenv("BASE_URL", "http://search_service:8000/api")
+from fastapi.testclient import TestClient
+
+from main import app
+
+client = TestClient(app)
+base_url = "/api"
+# base_url = os.getenv("BASE_URL", "http://search_service:8000/api")
 
 def test_read_channels():
-    response = requests.get(base_url+"/channel/search_channel")
+    response = client.get(base_url+"/channel/search_channel")
     assert response.status_code == 200
     data = response.json()
     # Verificamos que la respuesta sea un array
@@ -25,7 +30,7 @@ def test_read_channels():
     )
 
 def test_read_inexistent_channel():
-    response = requests.get(base_url+"/channel/search_channel"+"?q=holamundo")
+    response = client.get(base_url+"/channel/search_channel"+"?q=holamundo")
     assert response.status_code == 200
     data = response.json()
     # Verificamos que la respuesta sea un array

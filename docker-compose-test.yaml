@@ -1,6 +1,8 @@
 services:
-  search_service:
-    build: .
+  test_runner:
+    build:
+      context: .
+      dockerfile: Dockerfiletest
     ports:
       - "8000:8000"
     environment:
@@ -27,15 +29,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    networks:
-      - Search_Service
-
-  test_runner:
-    build: ./tests/
-    environment:
-      BASE_URL: "http://search_service:8000"
-    depends_on:
-      - search_service
     networks:
       - Search_Service
 
