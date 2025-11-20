@@ -1,7 +1,10 @@
 FROM python:3.13.5-alpine3.22
 
-COPY requirementstest.txt .
-RUN pip install --no-cache-dir -r requirementstest.txt
+# Copiamos todo el proyecto
 COPY . .
 
-ENTRYPOINT ["pytest", "-v", "tests/routers/test_channels.py"]
+# Instalamos dependencias de tests (o toda la app si es la misma)
+RUN pip install --no-cache-dir -r requirementstest.txt
+
+# Comando por defecto para correr los tests
+CMD ["pytest", "-v", "tests/routers/test_channels.py"]
