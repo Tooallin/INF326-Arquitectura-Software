@@ -1,11 +1,11 @@
 services:
-  test_service:
-    build: ./test/
+  search_service:
+    build: .
     ports:
       - "8000:8000"
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
-      RABBITMQ_HOST: "message-broker"  # Se conecta a un broker externo
+      RABBITMQ_HOST: "message-broker"
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -27,6 +27,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - Search_Service
+
+  test_runner:
+    build: .
+    command: pytest -v tests/routers/test_channels.py
+    environment:
+      BASE_URL: "http://search_service:8000"
+    depends_on:
+      - search_service
     networks:
       - Search_Service
 
