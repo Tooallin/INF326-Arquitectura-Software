@@ -1,10 +1,13 @@
+# Dockerfiletest
 FROM python:3.13.5-alpine3.22
 
-# Copiamos todo el proyecto
+WORKDIR /app
+
+RUN apk add --no-cache curl
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-# Instalamos dependencias de tests (o toda la app si es la misma)
-RUN pip install --no-cache-dir -r requirementstest.txt
-
-# Comando por defecto para correr los tests
-CMD ["pytest", "-v", "tests/routers/test_channels.py"]
+CMD ["python", "-m", "unittest", "discover", "tests", "-v"]

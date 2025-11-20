@@ -22,3 +22,6 @@ Integrantes:
 
 5.- Finalmente para terminar la ejecución correr en los directorio correspondientes el siguiente comando: 
 `docker compose down`
+
+6.- Para levantar el contenedor para testear el microservicio: 
+`docker compose -f docker-compose-test.yaml up --build --attach test_runner --abort-on-container-exit --exit-code-from test_runner`

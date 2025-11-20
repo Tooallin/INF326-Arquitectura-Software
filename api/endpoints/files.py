@@ -1,6 +1,6 @@
 from typing import Optional, List
 from fastapi import APIRouter, Query
-from files.services import svc_searchfiles
+import files.services
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -33,7 +33,7 @@ def SearchFiles(
 	limit: int = Query(10, ge=1, le=100, description="Cantidad máxima de resultados (por defecto 10)"),
 	offset: int = Query(0, ge=0, description="Desplazamiento de resultados (paginación)")
 ):
-	return svc_searchfiles(
+	return files.services.svc_searchfiles(
 		q=q,
 		file_id=file_id,
 		thread_id=thread_id,

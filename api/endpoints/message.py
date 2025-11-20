@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
-from mensajes.services import search_message
+import mensajes.services
 from typing import Optional, List
 
 router = APIRouter()
@@ -33,4 +33,4 @@ def SearchMessages(
     limit: int = Query(10, ge=1, le=100, description="Cantidad máxima de resultados (por defecto 10)"),
     offset: int = Query(0, ge=0, description="Desplazamiento de resultados (paginación)")
 ):
-	return search_message(q=q, user_id=user_id, thread_id=thread_id, message_id=message_id, type_=type_, limit=limit, offset=offset)
+	return mensajes.services.search_message(q=q, user_id=user_id, thread_id=thread_id, message_id=message_id, type_=type_, limit=limit, offset=offset)
