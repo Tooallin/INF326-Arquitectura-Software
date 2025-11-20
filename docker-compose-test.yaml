@@ -31,8 +31,7 @@ services:
       - Search_Service
 
   test_runner:
-    build: .
-    command: pytest -v tests/routers/test_channels.py
+    build: ./tests/
     environment:
       BASE_URL: "http://search_service:8000"
     depends_on:
