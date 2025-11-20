@@ -1,0 +1,38 @@
+services:
+  test_service:
+    build: ./test/
+    ports:
+      - "8000:8000"
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+      RABBITMQ_HOST: "message-broker"  # Se conecta a un broker externo
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - Search_Service
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -E '\"status\":\"(green|yellow)\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - Search_Service
+
+volumes:
+  es_data:
+
+networks:
+  Search_Service:
+    external: true
