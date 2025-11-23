@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.endpoints import files, message, threads, channel, health
+from api.endpoints import files, message, threads, channel
 
 api_router = APIRouter()
 
@@ -8,4 +8,4 @@ api_router.include_router(files.router, prefix="/files", tags=["Files"])
 api_router.include_router(threads.router, prefix="/threads", tags=["Threads"])
 #api_router.include_router(search.router, prefix="/search", tags=["Search"])
 api_router.include_router(channel.router, prefix="/channel", tags=["Channel"])
-api_router.include_router(health.router, prefix="", tags=["Health"])
+#api_router.include_router(health.router, prefix="", tags=["Health"])
