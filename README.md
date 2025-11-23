@@ -6,10 +6,8 @@ Integrantes:
 - Alessandro Cintolesi.
 
 Repositorio asociado al servicio de búsqueda cuyas tareas son: 
-
-Indexa eventos de mensajes, hilos y archivos.
-
-Expone búsquedas por canal, hilo o palabra clave.
+- Indexa eventos de mensajes, hilos y archivos.
+- Expone búsquedas por canal, hilo o palabra clave.
 
 Para visualizar los test, dirigirse a la carpeta [/tests](https://github.com/Tooallin/INF326-Arquitectura-Software/tree/main/tests)
 
