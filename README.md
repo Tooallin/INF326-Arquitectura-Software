@@ -6,6 +6,7 @@ Integrantes:
 
 
 ## [Enlace video](https://usmcl-my.sharepoint.com/:v:/g/personal/jan_jorquera_usm_cl/ERjWPO-v5AdAivVsWNW5TWcBoSLpJe8-DF9RSoOXLnRZ1A?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=rAz1cH)
+## [Enlace video pruebas de servicio](https://usmcl-my.sharepoint.com/:v:/g/personal/jan_jorquera_usm_cl/IQAnlUWod82JTah4fMXek5RQAYRR_n18sT_CaoKCfhplEkU?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=XLkt7r)
 ## Instrucciones para correr la tarea
 
 1.- Crear la red donde se comunicarán los containers
